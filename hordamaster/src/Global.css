@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Marhey:wght@300..700&display=swap");
+@import "tailwindcss";
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Marhey", sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+
+  background-color: rgba(89, 129, 101, 0);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.445);
+  filter: brightness(10%);
+}
+
+input {
+  outline: none;
+}
+
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+button {
+  cursor: pointer;
+}
+
+textarea {
+  outline: none;
+}
+
+textarea::selection {
+  background: var(--color-brown-900);
+  color: var(--color-brown-200);
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  filter: brightness(0);
+  cursor: pointer;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  text-align: center;
+}
+
+@theme {
+  --color-brown-100: #ffeadf;
+  --color-brown-200: #e7d5b3;
+  --color-brown-500: #82583f;
+  --color-brown-900: #291405;
+  --font-title: "Marhey", sans-serif;
+}
