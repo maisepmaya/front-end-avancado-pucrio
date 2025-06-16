@@ -2,7 +2,7 @@
   <img src="src/assets/logo.png" alt="logo" width="200"/>
 </div>
 
-# HordaMaster
+# HordaMaster 
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/maisepmaya/front-end-puc-rio-project?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/maisepmaya/front-end-puc-rio-project?style=for-the-badge)
@@ -104,11 +104,9 @@ Acesse no navegador: `http://localhost:5173`.
 ├── vite.config.js        # Configuração do Vite
 ├── eslint.config.js      # Regras de linting
 └── README.md             # Documentação do projeto
+```
 
-## 🎓 Créditos
+
+##
 
 Projeto da **Pós-Graduação em Desenvolvimento Full-Stack** - **PUC-Rio**.
-Icons: [Freepik](https://www.freepik.com/)
-Arte visual: Criada manualmente pela autora.
-
-```
