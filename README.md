@@ -82,31 +82,6 @@ Acesse no navegador: `http://localhost:5173`.
 ✅ Integração com a 5e SRD API  
 ✅ Interface intuitiva e divertida
 
-## 📁 Estrutura do Projeto
-
-```plaintext
-/
-├── src/
-│   ├── assets/           # Imagens, ícones e recursos gráficos
-│   ├── components/       # Componentes reutilizáveis da interface
-│   ├── contexts/         # Contextos de estado global (React Context API)
-│   ├── routes/           # Definição das rotas de navegação
-│   ├── types/            # Tipagens e interfaces TypeScript
-│   ├── utils/            # Funções utilitárias
-│   ├── App.tsx           # Componente principal da aplicação
-│   ├── env.d.ts          # Configuração de variáveis de ambiente TypeScript
-│   ├── Global.css        # Estilos globais
-│   └── main.jsx          # Ponto de entrada principal do React
-├── .gitignore            # Arquivos e pastas ignorados pelo Git
-├── index.html            # Estrutura base HTML
-├── package.json          # Dependências e scripts do projeto
-├── package-lock.json     # Versões travadas das dependências
-├── vite.config.js        # Configuração do Vite
-├── eslint.config.js      # Regras de linting
-└── README.md             # Documentação do projeto
-```
-
-
 ##
 
 Projeto da **Pós-Graduação em Desenvolvimento Full-Stack** - **PUC-Rio**.
