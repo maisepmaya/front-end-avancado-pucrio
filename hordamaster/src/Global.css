@@ -71,9 +71,16 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 @theme {
-  --color-brown-100: #ffeadf;
-  --color-brown-200: #e7d5b3;
+  --color-brown-100: #f3e9e1;
+  --color-brown-200: #edd9ca;
+  --color-brown-300: #d1b29d;
+  --color-brown-400: #b98d70;
   --color-brown-500: #82583f;
-  --color-brown-900: #291405;
+  --color-brown-600: #6a4532;
+  --color-brown-700: #543425;
+  --color-brown-800: #3e2419;
+  --color-brown-900: #29160d;
+  --color-green-500: #2d6856;
+  --color-tag-bg: #fddbc5;
   --font-title: "Marhey", sans-serif;
 }

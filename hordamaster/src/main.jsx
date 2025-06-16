@@ -3,11 +3,11 @@ import { createRoot } from "react-dom/client";
 import "./Global.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./routes/Home.jsx";
-import About from "./routes/About.jsx";
+import Home from "./routes/Home.js";
+import About from "./routes/About.js";
 
-import App from "./App.jsx";
-import ErrorPage from "./routes/ErrorPage.jsx";
+import App from "./App.js";
+import ErrorPage from "./routes/ErrorPage.js";
 import CreateSheet from "./routes/CreateSheet.js";
 
 const router = createBrowserRouter([
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "sobre",
+        path: "sobre/:id",
         element: <About />,
       },
       {

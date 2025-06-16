@@ -1,6 +1,12 @@
+import { ButtonHTMLAttributes, ReactNode } from "react";
 import ImgDiv from "./ImgDiv";
 
-const HexagonBtn = ({ icon, ...rest }) => {
+import Frame from "./../assets/frame.png";
+
+interface IFormHexagonBtn extends ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: ReactNode;
+}
+const HexagonBtn = ({ icon, ...rest }: IFormHexagonBtn) => {
   return (
     <button
       className={
@@ -8,7 +14,7 @@ const HexagonBtn = ({ icon, ...rest }) => {
       }
       {...rest}
     >
-      <ImgDiv src={"./src/assets/frame.png"} className={"size-full"}>
+      <ImgDiv src={Frame} className={"size-full"}>
         <div className="size-full flex items-center justify-center p-3">
           {icon}
         </div>
