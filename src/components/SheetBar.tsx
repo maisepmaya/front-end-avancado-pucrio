@@ -85,7 +85,6 @@ const SheetBar = ({
     if (sheetType === "internet") findSheetApi();
     else {
       setSheets(Object.values(sheetList));
-      setEndOfList(true);
       setPage("list");
     }
   }, [sheetType, sheetList]);
@@ -113,22 +112,28 @@ const SheetBar = ({
               />
             ))}
 
-            {endOfList ? (
-              endOfList === "load" && (
-                <div className="w-full flex items-center justify-center">
-                  <SpinnerGapIcon
-                    size={35}
-                    weight="bold"
-                    className="animate-spin fill-brown-100"
+            {sheetType === "internet" && endOfList !== true && (
+              <div className="w-full flex items-center justify-center">
+                {endOfList === "load" ? (
+                  <div role="status" aria-live="polite">
+                    <SpinnerGapIcon
+                      size={35}
+                      weight="bold"
+                      className="animate-spin fill-brown-100"
+                      aria-hidden="true"
+                    />
+                    <span className="sr-only">Carregando mais fichas...</span>
+                  </div>
+                ) : (
+                  <SquareButton
+                    btnType="plus"
+                    className="w-10"
+                    onClick={() => handleApiList(false)}
+                    aria-label="Carregar mais fichas"
+                    title="Carregar mais fichas"
                   />
-                </div>
-              )
-            ) : (
-              <SquareButton
-                btnType="plus"
-                className="w-10"
-                onClick={() => handleApiList(false)}
-              />
+                )}
+              </div>
             )}
           </>
         ) : (
@@ -151,11 +156,19 @@ const SheetBar = ({
           `${open ? "translate-none" : "-translate-x-[86%]"}`
         }
       >
-        <aside className="h-full w-64 ">
-          <ImgDiv src={Banner} className="h-full">
+        <aside
+          className="h-full w-64"
+          role="complementary"
+          aria-label="Barra lateral de fichas"
+        >
+          <ImgDiv src={Banner} className="h-full" alt="Banner da barra lateral">
             <div className="size-full px-3 py-4 overflow-hidden flex flex-col">
               {/* Header */}
-              <ImgDiv src={Wood} className={"h-15 flex-none"}>
+              <ImgDiv
+                src={Wood}
+                className={"h-15 flex-none"}
+                alt="Fundo de madeira do cabeçalho"
+              >
                 <div className="size-full text-brown-100 font-title pt-2 text-lg font-bold flex items-center justify-center">
                   Fichas
                 </div>
@@ -166,7 +179,10 @@ const SheetBar = ({
                 <div className="flex-none">
                   {/* Buttons */}
                   {!handleDeleteItem && (
-                    <div className="flex flex-row gap-4 items-center justify-center">
+                    <div
+                      className="flex flex-row gap-4 items-center justify-center"
+                      aria-label="Tipo de fichas"
+                    >
                       <div
                         className={`${
                           sheetType === "internet" && "opacity-75 scale-90"
@@ -174,7 +190,9 @@ const SheetBar = ({
                       >
                         <HexagonBtn
                           onClick={() => setType("user")}
-                          title={"Minhas fichas"}
+                          title="Minhas fichas criadas"
+                          aria-pressed={sheetType === "user"}
+                          role="tab"
                           icon={
                             <UserIcon
                               size={28}
@@ -191,7 +209,9 @@ const SheetBar = ({
                       >
                         <HexagonBtn
                           onClick={() => setType("internet")}
-                          title={"Procurar por fichas"}
+                          title="Procurar fichas na API"
+                          aria-pressed={sheetType === "internet"}
+                          role="tab"
                           icon={
                             <GlobeIcon
                               size={28}
@@ -204,7 +224,7 @@ const SheetBar = ({
                     </div>
                   )}
 
-                  {/* Input */}
+                  {/* Search Input */}
                   <div className="p-2 flex justify-center gap-1 items-center">
                     <FormInput
                       type="search"
@@ -216,19 +236,26 @@ const SheetBar = ({
                         setSearch(e.target.value);
                         handleSearch(e.target.value);
                       }}
-                      icon={<MagnifyingGlassIcon weight="bold" />}
-                      className={
-                        "bg-brown-100 text-black  placeholder-brown-800/50"
+                      icon={
+                        <MagnifyingGlassIcon weight="bold" aria-hidden="true" />
                       }
+                      className="bg-brown-100 text-black placeholder-brown-800/50"
+                      aria-label="Buscar fichas por nome"
                     />
                   </div>
 
                   <hr className="py-1 border-brown-100 opacity-50 " />
                 </div>
 
-                {/* List */}
+                {/* Sheet List */}
                 <div className="relative flex-1 mb-15">
-                  <ul className="absolute px-2 inset-0 space-y-4 overflow-y-auto overflow-x-hidden max-h-[100%]">
+                  <ul
+                    role="list"
+                    aria-label={`Lista de fichas ${
+                      sheetType === "user" ? "criadas" : "da API"
+                    }`}
+                    className="absolute px-2 inset-0 space-y-4 overflow-y-auto overflow-x-hidden max-h-[100%]"
+                  >
                     {screens[currPage]}
                   </ul>
                 </div>
@@ -237,37 +264,36 @@ const SheetBar = ({
           </ImgDiv>
         </aside>
 
-        {/* Open Btn */}
-        <label
-          htmlFor="openBtn"
+        {/* Toggle Button */}
+        <button
+          onClick={() => setOpen((prev) => !prev)}
           className="group -ml-2 inline-flex z-20 cursor-pointer mt-2 text-sm rounded-lg sm:hidden"
+          aria-expanded={open}
+          aria-controls="sheet-sidebar"
+          aria-label={open ? "Fechar barra lateral" : "Abrir barra lateral"}
         >
-          <input
-            id="openBtn"
-            type="checkbox"
-            className="hidden"
-            checked={open}
-            onChange={(e) => setOpen(e.target.checked)}
-          />
-          <span className="sr-only">Open sidebar</span>
-          <div className="h-10 w-10 rounded-r bg-green-500 flex items-center justify-center ">
+          <div className="h-10 w-10 rounded-r bg-green-500 flex items-center justify-center">
             <ArrowFatLineRightIcon
               size={24}
               weight="fill"
-              className={`transition-all ease-in-out animate-pulse fill-brown-100 group-has-active:scale-90 ${
+              className={`transition-all ease-in-out animate-pulse fill-brown-100 group-active:scale-90 ${
                 open ? "rotate-180" : "rotate-0"
               }`}
+              aria-hidden="true"
             />
           </div>
-        </label>
+        </button>
       </div>
 
-      {/* Dark Bg */}
+      {/* Overlay */}
       {open && (
-        <section
-          className="absolute inset-0 bg-black opacity-25 cursor-pointer z-100"
+        <div
+          className="absolute inset-0 bg-black opacity-25 cursor-pointer z-100 sm:hidden"
           onClick={() => setOpen((prev) => !prev)}
-        ></section>
+          aria-label="Fechar barra lateral"
+          role="button"
+          tabIndex={0}
+        />
       )}
     </>
   );
@@ -285,18 +311,21 @@ const SheetItem = ({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="group relative">
+    <li className="group relative">
       <div
         onClick={() => {
           if (handleClick) handleClick(sheet);
         }}
+        role={handleClick ? "button" : undefined}
+        tabIndex={handleClick ? 0 : undefined}
+        aria-label={handleClick ? `Adicionar ${sheet.name} ao grid` : undefined}
         className="w-2xs pointer active:scale-98 gap-2 cursor-pointer w-full z-20 flex relative items-center justify-between text-brown-200 font-bold transition-transform hover:scale-105"
       >
         {/* Image */}
         <div className="transition-all  aspect-square size-10 flex relative hover:static p-1 bg-brown-900 border-[3px] border-brown-200 rounded-lg shadow-[2px_2px_0px_#9b8356,inset_2px_2px_0px_#9b8356]">
           <img
             src={sheet.icon}
-            alt="icon"
+            alt={`Ícone de ${sheet.name}`}
             className="absolute p-1 inset-0 rounded-xl pointer-events-none select-none"
           />
         </div>
@@ -306,11 +335,14 @@ const SheetItem = ({
           {sheet.name}
         </p>
 
-        {/* Name */}
+        {/* Level */}
         <div className=" flex items-center gap-1">
-          <p className="bg-brown-200 text-brown-900 font-bold text-sm px-2 py-1 rounded h-[20px] flex items-center justify-center">
+          <span
+            aria-label={`Nível ${sheet.level}`}
+            className="bg-brown-200 text-brown-900 font-bold text-sm px-2 py-1 rounded h-[20px] flex items-center justify-center"
+          >
             {sheet.level}
-          </p>
+          </span>
         </div>
 
         {/* Buttons */}
@@ -321,6 +353,7 @@ const SheetItem = ({
                 e.stopPropagation();
                 handleDelete(sheet.id);
               }}
+              aria-label={`Deletar ficha ${sheet.name}`}
               className="z-15 absolute size-[48px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 "
             />
 
@@ -333,9 +366,12 @@ const SheetItem = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-
                 setOpen((prev) => !prev);
               }}
+              aria-expanded={open}
+              aria-label={`${open ? "Ocultar" : "Mostrar"} informações de ${
+                sheet.name
+              }`}
               className="peer z-10 absolute size-[48px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 "
             />
 
@@ -377,7 +413,7 @@ const SheetItem = ({
           )}
         </div>
       )}
-    </div>
+    </li>
   );
 };
 
