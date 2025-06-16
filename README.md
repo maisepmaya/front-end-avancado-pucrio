@@ -1,12 +1,108 @@
-# React + Vite
+<div align="center">
+  <img src="src/assets/logo.png" alt="logo" width="200"/>
+</div>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# HordaMaster 
+![GitHub repo size](https://img.shields.io/github/repo-size/maisepmaya/front-end-puc-rio-project?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/maisepmaya/front-end-puc-rio-project?style=for-the-badge)
 
-Currently, two official plugins are available:
+O **HordaMaster** é uma aplicação web criada para facilitar a vida de mestres de RPG de mesa, ajudando a gerenciar **múltiplos inimigos em combate** de forma organizada, prática e em tempo real.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+📚 **RPG**, do inglês *Role Playing Game*, é um jogo de interpretação de papéis, onde um grupo de pessoas cria uma história em conjunto. Um narrador — chamado de **mestre** — descreve o mundo, cria desafios e controla criaturas e inimigos que os jogadores enfrentam. Durante os combates, o mestre costuma administrar várias criaturas ao mesmo tempo, o que pode ser confuso quando feito apenas em papel ou planilhas.
 
-## Expanding the ESLint configuration
+✨ O **HordaMaster** resolve esse problema permitindo:
+- Criar **fichas** de inimigos com nome, nível, pontos de vida, classe de armadura e informações adicionais.
+- Adicionar múltiplas cópias de inimigos numeradas automaticamente (ex.: Goblin 1, Goblin 2, Goblin 3).
+- Gerenciar a vida de cada inimigo em tempo real direto na tela.
+- Consultar informações básicas de monstros usando a API [5e SRD API](https://www.dnd5eapi.co/).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Tecnologias utilizadas
+
+- **Vite**
+- **React**
+- **TailwindCSS**
+- **uuid**
+- **HTML5**
+- **CSS3**
+- **Icons:** Alguns ícones foram obtidos no [Freepik](https://www.freepik.com/); demais artes foram desenhadas por mim.
+
+## ⚙️ Estrutura de Páginas
+
+### 📌 Página Principal
+- Visualiza todas as fichas criadas.
+- Adiciona instâncias de cada ficha ao **grid de combate**, com numeração automática.
+- Gerencia vida e status de cada inimigo individualmente.
+
+### ✏️ Página Criar Ficha
+- Cria novas fichas de inimigos ou apaga fichas antigas.
+- Campos: Nome, Nível, Vida, CA, Ícone, Informações adicionais.
+- As fichas salvas ficam disponíveis na tela principal em **Minhas Fichas**.
+
+### ℹ️ Página Sobre
+- Explica o objetivo do HordaMaster.
+- Orienta mestres e novos usuários sobre o funcionamento.
+- Informa sobre o uso da 5e SRD API.
+
+## 🔗 Documentação da API Utilizada
+
+O **HordaMaster** usa a [5e SRD API](https://www.dnd5eapi.co/):
+
+- **Licença:** MIT License para a API; dados sob *Open Game License (OGL)*.
+- **Autenticação:** Não requer cadastro ou chave de acesso (API Key).
+
+### Endpoints Utilizados
+
+| Método | Endpoint | Descrição |
+| ------ | -------- | --------- |
+| `GET` | `/api/2014/monsters` | Retorna lista de monstros. |
+| `GET` | `/api/2014/monsters/{index}` | Retorna detalhes de um monstro. |
+
+## 📥 Como Instalar e Executar
+
+```bash
+git clone https://github.com/maisepmaya/front-end-avancado-pucrio.git
+cd front-end-avancado-pucrio
+npm install
+npm run dev
+```
+
+Acesse no navegador: `http://localhost:5173`.
+
+## ⚔️ Funcionalidades
+
+✅ Criação de fichas  
+✅ Edição e exclusão de fichas  
+✅ Adição de inimigos ao grid com numeração automática  
+✅ Gerenciamento de vida em tempo real  
+✅ Integração com a 5e SRD API  
+✅ Interface intuitiva e divertida
+
+## 📁 Estrutura do Projeto
+
+```plaintext
+/
+├── src/                  
+│   ├── assets/           # Imagens, ícones e recursos gráficos
+│   ├── components/       # Componentes reutilizáveis da interface
+│   ├── contexts/         # Contextos de estado global (React Context API)
+│   ├── routes/           # Definição das rotas de navegação
+│   ├── types/            # Tipagens e interfaces TypeScript
+│   ├── utils/            # Funções utilitárias
+│   ├── App.tsx           # Componente principal da aplicação
+│   ├── env.d.ts          # Configuração de variáveis de ambiente TypeScript
+│   ├── Global.css        # Estilos globais
+│   └── main.jsx          # Ponto de entrada principal do React
+├── .gitignore            # Arquivos e pastas ignorados pelo Git
+├── index.html            # Estrutura base HTML
+├── package.json          # Dependências e scripts do projeto
+├── package-lock.json     # Versões travadas das dependências
+├── vite.config.js        # Configuração do Vite
+├── eslint.config.js      # Regras de linting
+└── README.md             # Documentação do projeto
+
+## 🎓 Créditos
+
+Projeto da **Pós-Graduação em Desenvolvimento Full-Stack** - **PUC-Rio**.  
+Icons: [Freepik](https://www.freepik.com/)  
+Arte visual: Criada manualmente pela autora.
+
