@@ -1,8 +1,6 @@
-import NavBar from "../components/NavBar";
 import ImgDiv from "../components/ImgDiv";
 
 import Error from "../assets/error404.png";
-import Icon from "../assets/icon.png";
 
 import { Link } from "react-router-dom";
 import ButtonDefault from "../components/ButtonDefault";

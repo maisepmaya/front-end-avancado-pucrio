@@ -1,7 +1,7 @@
-import { ReactNode, useState, useEffect } from "react";
-import { Sheet } from "../../types/Sheet";
+import { type ReactNode, useState, useEffect } from "react";
+import type { Sheet } from "../../types/Sheet";
 import { v4 as uuidv4 } from "uuid";
-import { Card, Cards } from "../../types/Card";
+import type { Card, Cards } from "../../types/Card";
 import CardContext from "./CardContext";
 
 interface ICardProvider {

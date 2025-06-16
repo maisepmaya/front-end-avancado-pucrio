@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 import { createPortal } from "react-dom";
 import SheetBar from "../components/SheetBar";
 import ImgDiv from "../components/ImgDiv";
@@ -26,7 +26,7 @@ import Zombie from "./../assets/flaticon/zombie.png";
 import SheetFold from "./../assets/sheet-fold-90.png";
 import ButtonDefault from "../components/ButtonDefault";
 import useSheet from "../contexts/SheetContext/useSheet";
-import { SheetCreation } from "../types/Sheet";
+import type { SheetAttr, SheetCreation } from "../types/Sheet";
 import ConfirmModal from "../components/ConfirmModal";
 import useCard from "../contexts/CardContext/useCard";
 
@@ -251,7 +251,7 @@ const SheetForm = ({
                           id={`sheet-${field}`}
                           name={field}
                           type="number"
-                          value={form[field as keyof FormData]}
+                          value={form[field as SheetAttr]}
                           onChange={handleChange}
                           min={field === "level" ? "0" : "1"}
                           max={field === "life" ? "50000" : "100"}

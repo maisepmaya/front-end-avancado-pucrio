@@ -1,5 +1,5 @@
-import { ReactNode, useState, useEffect } from "react";
-import { Sheet, SheetCreation, Sheets } from "../../types/Sheet";
+import { type ReactNode, useState, useEffect } from "react";
+import type { Sheets, SheetCreation, Sheet } from "../../types/Sheet";
 import SheetContext from "./SheetContext";
 import { v4 as uuidv4 } from "uuid";
 
@@ -61,7 +61,7 @@ const SheetProvider = ({ children }: ISheetProvider) => {
     if (!sheetApiList) return null;
 
     const matchedSheet = search
-      ? sheetApiList.filter((monster) => {
+      ? sheetApiList.filter((monster: any) => {
           return monster.name.toLowerCase().includes(search.toLowerCase());
         })
       : sheetApiList;
@@ -71,7 +71,7 @@ const SheetProvider = ({ children }: ISheetProvider) => {
     if (matchedSheet) {
       try {
         const apiSheet = await Promise.all(
-          sliceIndex.map((index) =>
+          sliceIndex.map((index: any) =>
             fetch(`https://www.dnd5eapi.co${index.url}`).then((response) =>
               response.json()
             )

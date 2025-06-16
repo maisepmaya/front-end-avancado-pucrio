@@ -1,13 +1,14 @@
 import { CaretRightIcon, SwordIcon } from "@phosphor-icons/react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import SquareButton from "../components/SquareButton";
+import type { ReactNode } from "react";
 
 const About = () => {
   const { id } = useParams();
 
   const navigate = useNavigate();
 
-  const infos = {
+  const infos: Record<string, ReactNode> = {
     introduction: (
       <div className="space-y-4">
         <p>

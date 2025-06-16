@@ -17,14 +17,14 @@ import Banner from "./../assets/banner.png";
 import Wood from "./../assets/wood.png";
 
 import useSheet from "../contexts/SheetContext/useSheet";
-import { Sheet } from "../types/Sheet";
+import type { Sheet } from "../types/Sheet";
 import useDebounce from "../utils/debounce";
 
 const SheetBar = ({
   handleDeleteItem,
   handleClickItem,
 }: {
-  handleDeleteItem?: (id) => void;
+  handleDeleteItem?: (id: any) => void;
   handleClickItem?: (sheet: Sheet) => void;
 }) => {
   const [open, setOpen] = useState(false);
@@ -59,7 +59,7 @@ const SheetBar = ({
     setPage("error");
   };
 
-  const handleSearch = useDebounce(async (inputValue) => {
+  const handleSearch = useDebounce(async (inputValue: any) => {
     setPage("loading");
 
     if (sheetType === "internet") await handleApiList(true, inputValue);

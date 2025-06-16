@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import ImgDiv from "./ImgDiv";
 
 type ISquareBtnType = "default" | "plus" | "minus" | "exit";

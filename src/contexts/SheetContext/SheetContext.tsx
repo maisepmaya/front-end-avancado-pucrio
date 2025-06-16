@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Sheet, SheetCreation, Sheets } from "../../types/Sheet";
+import type { Sheet, SheetCreation, Sheets } from "../../types/Sheet";
 
 interface ISheetContextData {
   sheetList: Sheets;

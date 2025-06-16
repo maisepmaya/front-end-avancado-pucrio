@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { Sheet } from "../../types/Sheet";
-import { Card, Cards } from "../../types/Card";
+import type { Sheet } from "../../types/Sheet";
+import type { Cards, Card } from "../../types/Card";
 
 interface ICardContextData {
   cardList: Cards;

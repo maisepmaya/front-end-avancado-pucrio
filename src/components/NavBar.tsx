@@ -1,4 +1,4 @@
-import { AnchorHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes } from "react";
 import ImgDiv from "./ImgDiv";
 import { Link, useLocation } from "react-router-dom";
 

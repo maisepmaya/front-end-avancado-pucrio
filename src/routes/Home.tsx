@@ -12,7 +12,7 @@ import ImgDiv from "../components/ImgDiv";
 import SquareButton from "../components/SquareButton";
 import ButtonDefault from "../components/ButtonDefault";
 import { useEffect, useState } from "react";
-import { Card as CardType } from "../types/Card";
+import type { Card as CardType } from "../types/Card";
 import useCard from "../contexts/CardContext/useCard";
 import { HandHeartIcon } from "@phosphor-icons/react";
 import ConfirmModal from "../components/ConfirmModal";
@@ -96,7 +96,7 @@ const Card = ({
     low: BrokeHeart,
   };
 
-  const handleCardChange = useDebounce(async (id, card) => {
+  const handleCardChange = useDebounce(async (id: string, card: CardType) => {
     handleChange(id, card);
   }, 500);
 
@@ -213,7 +213,7 @@ const Card = ({
               <button
                 title={"Recuperar vida"}
                 className="transition-all absolute hover:scale-105 active:scale-95 -top-2 -right-2"
-                onClick={(e) =>
+                onClick={() =>
                   setCard((prev) => ({
                     ...prev,
                     currLife: Number(prev.life),
