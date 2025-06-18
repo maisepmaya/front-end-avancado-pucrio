@@ -3,10 +3,10 @@ import ImgDiv from "./ImgDiv";
 
 import Frame from "./../assets/frame.png";
 
-interface IFormHexagonBtn extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface IHexagonButton extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
 }
-const HexagonBtn = ({ icon, ...rest }: IFormHexagonBtn) => {
+const HexagonButton = ({ icon, ...rest }: IHexagonButton) => {
   return (
     <button
       className={
@@ -23,4 +23,4 @@ const HexagonBtn = ({ icon, ...rest }: IFormHexagonBtn) => {
   );
 };
 
-export default HexagonBtn;
+export default HexagonButton;

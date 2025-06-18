@@ -8,7 +8,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
 }
 
-export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
+const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   (
     {
       label,
@@ -78,7 +78,7 @@ interface FormTextareaProps
   id: string; // Declare id variable
 }
 
-export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
+const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
   (
     {
       label,
@@ -131,7 +131,7 @@ interface FormSelectProps
   id: string; // Declare id variable
 }
 
-export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
+const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
   (
     {
       optionList,
@@ -176,3 +176,5 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
 );
 
 FormSelect.displayName = "FormSelect";
+
+export { FormInput, FormTextarea, FormSelect };

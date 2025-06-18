@@ -8,7 +8,7 @@ import Plus from "./../assets/plus.png";
 import Minus from "./../assets/minus.png";
 import Exit from "./../assets/exit.png";
 
-interface IFormSquareButton extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ISquareButton extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
   className?: string;
   btnType?: ISquareBtnType;
@@ -19,7 +19,7 @@ const SquareButton = ({
   btnType = "default",
   className,
   ...rest
-}: IFormSquareButton) => {
+}: ISquareButton) => {
   const types: Record<ISquareBtnType, string> = {
     default: ButtonImage,
     plus: Plus,

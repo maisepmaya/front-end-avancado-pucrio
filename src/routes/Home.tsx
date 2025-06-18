@@ -24,19 +24,19 @@ import useDebounce from "../utils/debounce";
 
 const Home = () => {
   const { handleAdd, resetCardList } = useCard();
-  const [modal, openModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleResetConfirm = useCallback(() => {
     resetCardList();
-    openModal(false);
+    setIsModalOpen(false);
   }, [resetCardList]);
 
   return (
     <main className="flex relative flex-row size-full">
-      {modal &&
+      {isModalOpen &&
         createPortal(
           <ConfirmModal
-            onClose={() => openModal(false)}
+            onClose={() => setIsModalOpen(false)}
             onConfirm={handleResetConfirm}
             title="Resetar Cartões"
             text="Todos os cartões serão removidos. Deseja continuar?"
@@ -44,14 +44,14 @@ const Home = () => {
           document.body
         )}
 
-      <SheetBar handleClickItem={handleAdd} />
+      <SheetBar handleSelectSheet={handleAdd} />
 
       <section className="w-full relative" aria-label="Grid de combate">
         <Grid />
         <ButtonDefault
           className="bg-green-500 text-brown-200 shadow-teal-500 absolute sm:bottom-5 right-4 top-4 sm:top-auto sm:right-1/2 sm:-translate-x-1/2 z-40 focus:outline-none focus:ring-2 focus:ring-green-300"
           text="Resetar"
-          onClick={() => openModal(true)}
+          onClick={() => setIsModalOpen(true)}
           aria-label="Resetar todos os cartões do grid de combate"
         />
       </section>

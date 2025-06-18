@@ -10,7 +10,7 @@ import {
 } from "@phosphor-icons/react";
 import ImgDiv from "./ImgDiv";
 import { FormInput } from "./Form";
-import HexagonBtn from "./HexagonBtn";
+import HexagonButton from "./HexagonButton";
 import SquareButton from "./SquareButton";
 
 import Banner from "./../assets/banner.png";
@@ -21,13 +21,13 @@ import type { Sheet } from "../types/Sheet";
 import useDebounce from "../utils/debounce";
 
 const SheetBar = ({
-  handleDeleteItem,
-  handleClickItem,
+  handleDeleteSheet,
+  handleSelectSheet,
 }: {
-  handleDeleteItem?: (id: any) => void;
-  handleClickItem?: (sheet: Sheet) => void;
+  handleDeleteSheet?: (id: any) => void;
+  handleSelectSheet?: (sheet: Sheet) => void;
 }) => {
-  const [open, setOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [sheetType, setType] = useState<"internet" | "user">("user");
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
@@ -104,11 +104,11 @@ const SheetBar = ({
         {sheets.length > 0 ? (
           <>
             {sheets.map((sheet, index) => (
-              <SheetItem
+              <SheetLi
                 key={index}
                 sheet={sheet}
-                handleDelete={handleDeleteItem}
-                handleClick={handleClickItem}
+                handleDelete={handleDeleteSheet}
+                handleSelect={handleSelectSheet}
               />
             ))}
 
@@ -153,7 +153,7 @@ const SheetBar = ({
       <div
         className={
           "z-110 h-full absolute flex flex-row top-0 bottom-0 left-0 p-2 sm:relative transition-transform sm:translate-none " +
-          `${open ? "translate-none" : "-translate-x-[86%]"}`
+          `${isSidebarOpen ? "translate-none" : "-translate-x-[86%]"}`
         }
       >
         <aside
@@ -178,7 +178,7 @@ const SheetBar = ({
                 {/* Actions */}
                 <div className="flex-none">
                   {/* Buttons */}
-                  {!handleDeleteItem && (
+                  {!handleDeleteSheet && (
                     <div
                       className="flex flex-row gap-4 items-center justify-center"
                       aria-label="Tipo de fichas"
@@ -188,7 +188,7 @@ const SheetBar = ({
                           sheetType === "internet" && "opacity-75 scale-90"
                         }`}
                       >
-                        <HexagonBtn
+                        <HexagonButton
                           onClick={() => setType("user")}
                           title="Minhas fichas criadas"
                           aria-pressed={sheetType === "user"}
@@ -207,7 +207,7 @@ const SheetBar = ({
                           sheetType === "user" && "opacity-75 scale-90"
                         }`}
                       >
-                        <HexagonBtn
+                        <HexagonButton
                           onClick={() => setType("internet")}
                           title="Procurar fichas na API"
                           aria-pressed={sheetType === "internet"}
@@ -266,18 +266,20 @@ const SheetBar = ({
 
         {/* Toggle Button */}
         <button
-          onClick={() => setOpen((prev) => !prev)}
+          onClick={() => setIsSidebarOpen((prev) => !prev)}
           className="group -ml-2 inline-flex z-20 cursor-pointer mt-2 text-sm rounded-lg sm:hidden"
-          aria-expanded={open}
+          aria-expanded={isSidebarOpen}
           aria-controls="sheet-sidebar"
-          aria-label={open ? "Fechar barra lateral" : "Abrir barra lateral"}
+          aria-label={
+            isSidebarOpen ? "Fechar barra lateral" : "Abrir barra lateral"
+          }
         >
           <div className="h-10 w-10 rounded-r bg-green-500 flex items-center justify-center">
             <ArrowFatLineRightIcon
               size={24}
               weight="fill"
               className={`transition-all ease-in-out animate-pulse fill-brown-100 group-active:scale-90 ${
-                open ? "rotate-180" : "rotate-0"
+                isSidebarOpen ? "rotate-180" : "rotate-0"
               }`}
               aria-hidden="true"
             />
@@ -286,10 +288,10 @@ const SheetBar = ({
       </div>
 
       {/* Overlay */}
-      {open && (
+      {isSidebarOpen && (
         <div
           className="absolute inset-0 bg-black opacity-25 cursor-pointer z-100 sm:hidden"
-          onClick={() => setOpen((prev) => !prev)}
+          onClick={() => setIsSidebarOpen((prev) => !prev)}
           aria-label="Fechar barra lateral"
           role="button"
           tabIndex={0}
@@ -299,26 +301,28 @@ const SheetBar = ({
   );
 };
 
-const SheetItem = ({
+const SheetLi = ({
   handleDelete,
-  handleClick,
+  handleSelect,
   sheet,
 }: {
   handleDelete?: (id: string) => void;
-  handleClick?: (item: Sheet) => void;
+  handleSelect?: (item: Sheet) => void;
   sheet: Sheet;
 }) => {
-  const [open, setOpen] = useState(false);
+  const [openInfo, setOpenInfo] = useState(false);
 
   return (
     <li className="group relative">
       <div
         onClick={() => {
-          if (handleClick) handleClick(sheet);
+          if (handleSelect) handleSelect(sheet);
         }}
-        role={handleClick ? "button" : undefined}
-        tabIndex={handleClick ? 0 : undefined}
-        aria-label={handleClick ? `Adicionar ${sheet.name} ao grid` : undefined}
+        role={handleSelect ? "button" : undefined}
+        tabIndex={handleSelect ? 0 : undefined}
+        aria-label={
+          handleSelect ? `Adicionar ${sheet.name} ao grid` : undefined
+        }
         className="w-2xs pointer active:scale-98 gap-2 cursor-pointer w-full z-20 flex relative items-center justify-between text-brown-200 font-bold transition-transform hover:scale-105"
       >
         {/* Image */}
@@ -366,10 +370,10 @@ const SheetItem = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setOpen((prev) => !prev);
+                setOpenInfo((prev) => !prev);
               }}
-              aria-expanded={open}
-              aria-label={`${open ? "Ocultar" : "Mostrar"} informações de ${
+              aria-expanded={openInfo}
+              aria-label={`${openInfo ? "Ocultar" : "Mostrar"} informações de ${
                 sheet.name
               }`}
               className="peer z-10 absolute size-[48px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 "
@@ -380,7 +384,7 @@ const SheetItem = ({
               weight="bold"
               className={
                 "transition-all peer-active:scale-90 fill-brown-200 " +
-                `${open ? "rotate-180" : "rotate-0"}`
+                `${openInfo ? "rotate-180" : "rotate-0"}`
               }
             />
           </div>
@@ -393,7 +397,7 @@ const SheetItem = ({
           className={
             "z-20 bg-brown-500 text-brown-100 rounded transition-all ease-in-out duration-200 overflow-hidden mt-2 top-full " +
             `group-hover:opacity-100 group-hover:pointer-events-auto group-hover:max-h-50 ${
-              open
+              openInfo
                 ? "pointer-events-auto opacity-100 max-h-50"
                 : "pointer-events-none opacity-0 max-h-0 "
             }`

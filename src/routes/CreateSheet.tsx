@@ -85,7 +85,7 @@ const CreateSheet: React.FC = () => {
 
       {/* SideBar */}
       <SheetBar
-        handleDeleteItem={(param) => openModal({ param, active: true })}
+        handleDeleteSheet={(param) => openModal({ param, active: true })}
       />
 
       {/* Form */}
@@ -100,7 +100,7 @@ const SheetForm = ({
   handleCreate: (sheet: SheetCreation) => boolean;
 }) => {
   const [errors, setErrors] = useState<FormErrors>({});
-  const [open, setOpen] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
   const [form, setForm] = useState<SheetCreation>({
     name: "",
     level: "1",
@@ -109,7 +109,7 @@ const SheetForm = ({
     info: "",
     icon: Dice,
   });
-  const [modal, openModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -160,18 +160,18 @@ const SheetForm = ({
         info: "",
         icon: Dice,
       });
-      openModal(true);
+      setIsModalOpen(true);
     }
   };
 
   return (
     <>
       {/* Modal */}
-      {modal &&
+      {isModalOpen &&
         createPortal(
           <ConfirmModal
             title="Ficha Criada"
-            onClose={() => openModal(false)}
+            onClose={() => setIsModalOpen(false)}
             text={"Sua ficha foi criada com sucesso!"}
           />,
           document.body
@@ -184,7 +184,7 @@ const SheetForm = ({
             <div className="transition-all z-5 sm:min-w-sm relative bg-tag-bg w-full rounded-lg shadow-lg">
               {/* Header */}
               <div
-                onClick={() => setOpen((prev) => !prev)}
+                onClick={() => setOpenForm((prev) => !prev)}
                 className="hidden sm:flex absolute h-24 -top-12 -left-1 -right-10 z-5 active:brightness-95 cursor-pointer"
               >
                 <div className="bg-brown-900 -right-5 -left-7 h-full -top-10 absolute"></div>
@@ -194,9 +194,9 @@ const SheetForm = ({
                 <div className="z-80 text-brown-700 flex items-center justify-between absolute font-bold text-xl left-25 xl:left-28 right-8 top-5">
                   Criar Ficha
                   <CaretDownIcon
-                    weight={open ? "fill" : "bold"}
+                    weight={openForm ? "fill" : "bold"}
                     className={`text-brown-700 group-hover:rotate-180 transition-transform ${
-                      open ? "rotate-180" : "rotate-0"
+                      openForm ? "rotate-180" : "rotate-0"
                     }`}
                     size={24}
                   />
@@ -206,7 +206,7 @@ const SheetForm = ({
               {/* Content */}
               <div
                 className={`transition-all w-full p-8 ${
-                  !open && "sm:p-0 sm:max-h-0 sm:group-hover:max-h-160"
+                  !openForm && "sm:p-0 sm:max-h-0 sm:group-hover:max-h-160"
                 } sm:group-hover:p-8 overflow-hidden shadow-lg shadow-brown-900`}
               >
                 <div className="flex sm:hidden z-80 text-brown-700 items-center justify-center font-bold text-xl mb-4">
