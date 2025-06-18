@@ -12,7 +12,7 @@ interface ITab {
 }
 
 const NavBar = () => {
-  let location = useLocation();
+  const { pathname } = useLocation();
   const tabs: Record<string, ITab> = {
     home: { src: "/", name: "Início" },
     create: { src: "/criar", name: "Criar Fichas" },
@@ -30,11 +30,7 @@ const NavBar = () => {
           <ul className="flex flex-row gap-2 items-center justify-center">
             <img src={Logo} className="h-12 z-5 hidden sm:flex" />
             {Object.values(tabs).map((tab, index) => (
-              <ItemNav
-                key={index}
-                tab={tab}
-                active={location.pathname === tab.src}
-              />
+              <ItemNav key={index} tab={tab} active={pathname === tab.src} />
             ))}
           </ul>
         </nav>
