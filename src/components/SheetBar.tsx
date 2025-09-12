@@ -25,10 +25,10 @@ const SheetBar = ({
   handleSelectSheet,
 }: {
   handleDeleteSheet?: (id: any) => void;
-  handleSelectSheet?: (sheet: Sheet) => void;
+  handleSelectSheet?: (sheet: Sheet, type: "user" | "api") => void;
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [sheetType, setType] = useState<"internet" | "user">("user");
+  const [sheetType, setType] = useState<"api" | "user">("user");
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [currPage, setPage] = useState<"list" | "loading" | "error">("list");
@@ -62,7 +62,7 @@ const SheetBar = ({
   const handleSearch = useDebounce(async (inputValue: any) => {
     setPage("loading");
 
-    if (sheetType === "internet") await handleApiList(true, inputValue);
+    if (sheetType === "api") await handleApiList(true, inputValue);
     else {
       setSheets(
         Object.values(sheetList).filter((i) =>
@@ -82,7 +82,7 @@ const SheetBar = ({
       await handleApiList(true);
     };
 
-    if (sheetType === "internet") findSheetApi();
+    if (sheetType === "api") findSheetApi();
     else {
       setSheets(Object.values(sheetList));
       setPage("list");
@@ -108,11 +108,13 @@ const SheetBar = ({
                 key={index}
                 sheet={sheet}
                 handleDelete={handleDeleteSheet}
-                handleSelect={handleSelectSheet}
+                handleSelect={(sheet) =>
+                  handleSelectSheet && handleSelectSheet(sheet, sheetType)
+                }
               />
             ))}
 
-            {sheetType === "internet" && endOfList !== true && (
+            {sheetType === "api" && endOfList !== true && (
               <div className="w-full flex items-center justify-center">
                 {endOfList === "load" ? (
                   <div role="status" aria-live="polite">
@@ -185,7 +187,7 @@ const SheetBar = ({
                     >
                       <div
                         className={`${
-                          sheetType === "internet" && "opacity-75 scale-90"
+                          sheetType === "api" && "opacity-75 scale-90"
                         }`}
                       >
                         <HexagonButton
@@ -208,9 +210,9 @@ const SheetBar = ({
                         }`}
                       >
                         <HexagonButton
-                          onClick={() => setType("internet")}
+                          onClick={() => setType("api")}
                           title="Procurar fichas na API"
-                          aria-pressed={sheetType === "internet"}
+                          aria-pressed={sheetType === "api"}
                           role="tab"
                           icon={
                             <GlobeIcon

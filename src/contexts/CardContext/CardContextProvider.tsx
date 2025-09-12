@@ -1,8 +1,14 @@
 import { type ReactNode, useState, useEffect } from "react";
 import type { Sheet } from "../../types/Sheet";
-import { v4 as uuidv4 } from "uuid";
 import type { Card, Cards } from "../../types/Card";
 import CardContext from "./CardContext";
+import {
+  getAllCards,
+  createCard,
+  deleteCard,
+  updateCard,
+  deleteAllCards,
+} from "../../services/api";
 
 interface ICardProvider {
   children: ReactNode;
@@ -17,94 +23,104 @@ const CardProvider = ({ children }: ICardProvider) => {
     cardList: null,
   });
 
-  const handleAdd = (sheet: Sheet) => {
-    const newCard: Card = {
-      ...sheet,
-      id: uuidv4(),
-      currLife: Number(sheet.life),
-      sheetId: sheet.id,
+  const handleAdd = (sheet: Sheet, type: "user" | "api") => {
+    const newCard = {
+      sheet: type == "user" ? sheet.id : sheet,
+      index: Object.keys(cardList ?? {}).length + 1,
     };
 
-    setData((prev) => ({
-      ...prev,
-      cardList: {
-        ...prev.cardList,
-        [newCard.id]: newCard,
-      },
-    }));
+    createCard(newCard)
+      .then((createdCard) => {
+        setData((prev) => ({
+          ...prev,
+          cardList: {
+            ...prev.cardList,
+            [createdCard.id]: createdCard,
+          },
+        }));
+      })
+      .catch((error) => {
+        console.error("Failed to create card:", error);
+        alert("Erro ao criar o card. Tente novamente.");
+      });
   };
 
   const handleRemove = (id: string) => {
-    setData((prev) => {
-      const cardList = { ...prev.cardList };
-      delete cardList[id];
-
-      return {
-        ...prev,
-        cardList,
-      };
-    });
+    deleteCard(id)
+      .then(() => {
+        setData((prev) => {
+          const newCardList = { ...prev.cardList };
+          delete newCardList[id];
+          return {
+            ...prev,
+            cardList: newCardList,
+          };
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to delete card:", error);
+        alert("Erro ao deletar o card. Tente novamente.");
+      });
 
     return true;
   };
 
   const handleRemoveBySheetId = (sheetId: string) => {
-    setData((prev) => {
-      const cardList = prev.cardList;
+    if (!cardList) return;
 
-      if (cardList) {
-        const removeList = Object.values(cardList ?? {}).filter(
-          (card) => card.sheetId == sheetId
-        );
+    const cardsToRemove = Object.values(cardList).filter(
+      (card) => card.sheetId === sheetId
+    );
 
-        removeList.map((card) => delete cardList[card.id]);
-
-        console.log(removeList);
-        return {
-          ...prev,
-          cardList,
-        };
-      } else return prev;
+    cardsToRemove.forEach((card) => {
+      handleRemove(card.id);
     });
 
     return true;
   };
 
-  const handleChange = (id: string, card: Card) => {
-    setData((prev) => {
-      const cardList = { ...prev.cardList };
-      cardList[id] = card;
-
-      return {
-        ...prev,
-        cardList,
-      };
+  const handleChange = async (id: string, card: Card) => {
+    // salvar depois (ex: ao sair do input ou com debounce)
+    await updateCard(card).catch((error) => {
+      console.error("Failed to update card:", error);
+      alert("Erro ao atualizar o card. Tente novamente.");
     });
+
+    setData((prev) => ({
+      ...prev,
+      cardList: {
+        ...prev.cardList,
+        [id]: card, // atualização otimista
+      },
+    }));
   };
 
   const resetCardList = () => {
-    setData((prev) => {
-      return {
-        ...prev,
-        cardList: {},
-      };
-    });
+    deleteAllCards()
+      .then(() => {
+        setData({ cardList: {} });
+      })
+      .catch((error) => {
+        console.error("Failed to delete all cards:", error);
+        alert("Erro ao limpar os cards. Tente novamente.");
+      });
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const json = localStorage.getItem("cardList");
-      if (json)
-        setData({
-          cardList: JSON.parse(json),
-        });
+      try {
+        const cards = await getAllCards();
+
+        setData({ cardList: cards ?? {} });
+      } catch (error) {
+        console.error("Failed to fetch cards:", error);
+        setData({ cardList: {} });
+      }
     };
 
-    if (!cardList) fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (cardList) localStorage.setItem("cardList", JSON.stringify(cardList));
+    if (cardList === null) {
+      fetchData();
+    }
   }, [cardList]);
 
   return (

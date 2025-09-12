@@ -1,7 +1,7 @@
 import { type ReactNode, useState, useEffect } from "react";
 import type { Sheets, SheetCreation, Sheet } from "../../types/Sheet";
 import SheetContext from "./SheetContext";
-import { v4 as uuidv4 } from "uuid";
+import { createSheet, deleteSheet, getAllSheets } from "../../services/api";
 
 interface ISheetProvider {
   children: ReactNode;
@@ -19,32 +19,40 @@ const SheetProvider = ({ children }: ISheetProvider) => {
   });
 
   const handleCreate = (newSheet: SheetCreation) => {
-    const sheet: Sheet = {
-      ...newSheet,
-      id: uuidv4(),
-    };
-
-    setData((prev) => ({
-      ...prev,
-      sheetList: {
-        ...prev.sheetList,
-        [sheet.id]: sheet,
-      },
-    }));
+    createSheet(newSheet)
+      .then((createdSheet) => {
+        setData((prev) => ({
+          ...prev,
+          sheetList: {
+            ...prev.sheetList,
+            [createdSheet.id]: createdSheet,
+          },
+        }));
+      })
+      .catch((error) => {
+        console.error("Failed to create sheet:", error);
+        alert("Erro ao criar a ficha. Tente novamente.");
+      });
 
     return true;
   };
 
   const handleDelete = (id: string) => {
-    setData((prev) => {
-      const sheetList = { ...prev.sheetList };
-      delete sheetList[id];
-
-      return {
-        ...prev,
-        sheetList,
-      };
-    });
+    deleteSheet(id)
+      .then(() => {
+        setData((prev) => {
+          const newSheetList = { ...prev.sheetList };
+          delete newSheetList[id];
+          return {
+            ...prev,
+            sheetList: newSheetList,
+          };
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to delete sheet:", error);
+        alert("Erro ao deletar a ficha. Tente novamente.");
+      });
 
     return true;
   };
@@ -136,9 +144,15 @@ Imunidade a Condição: ${
         sheetList: {},
         sheetApiList: null,
       };
-      const json = localStorage.getItem("sheetList");
 
-      if (json) newSheets.sheetList = JSON.parse(json);
+      try {
+        console.log("teste");
+        const sheets = await getAllSheets("independent");
+
+        newSheets.sheetList = sheets ?? {};
+      } catch (error) {
+        console.error("Failed to fetch sheets:", error);
+      }
 
       const myHeaders = new Headers();
       myHeaders.append("Accept", "application/json");
@@ -149,7 +163,7 @@ Imunidade a Condição: ${
         redirect: "follow",
       };
 
-      await fetch("https://www.dnd5eapi.co/api/2014/monsters", requestOptions)
+      await fetch("https://www.dnd5eapi.co/api/monsters", requestOptions)
         .then((response) => response.text())
         .then((result) => {
           const data = JSON.parse(result);
@@ -164,10 +178,6 @@ Imunidade a Condição: ${
 
     if (!sheetList || !sheetApiList) fetchData();
   }, []);
-
-  useEffect(() => {
-    if (sheetList) localStorage.setItem("sheetList", JSON.stringify(sheetList));
-  }, [sheetList]);
 
   return (
     <SheetContext.Provider

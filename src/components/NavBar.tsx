@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import Logo from "./../assets/logo.png";
 import BigWood from "./../assets/bigWood.png";
-import Paper from "./../assets/Paper.png";
+import Paper from "./../assets/paper.png";
 
 interface ITab {
   src: string;

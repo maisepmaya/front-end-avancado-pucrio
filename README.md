@@ -73,6 +73,20 @@ npm run dev
 
 Acesse no navegador: `http://localhost:5173`.
 
+## 🐳 Executando com Docker
+
+Para executar o projeto utilizando Docker, siga os passos abaixo. A aplicação estará disponível em `http://localhost:3000`.
+
+1.  **Construa a imagem Docker:**
+    ```bash
+    docker build -t hordamaster .
+    ```
+
+2.  **Execute o contêiner:**
+    ```bash
+    docker run -p 3000:3000 hordamaster
+    ```
+
 ## ⚔️ Funcionalidades
 
 ✅ Criação de fichas  

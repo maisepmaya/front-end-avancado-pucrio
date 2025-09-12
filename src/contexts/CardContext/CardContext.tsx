@@ -4,7 +4,7 @@ import type { Cards, Card } from "../../types/Card";
 
 interface ICardContextData {
   cardList: Cards;
-  handleAdd: (sheet: Sheet) => void;
+  handleAdd: (sheet: Sheet, type: "user" | "api") => void;
   handleRemove: (id: string) => void;
   handleChange: (id: string, card: Card) => void;
   resetCardList: () => void;
