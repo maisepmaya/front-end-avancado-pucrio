@@ -20,6 +20,10 @@ O **HordaMaster** é uma aplicação web criada para facilitar a vida de mestres
 
 🔗 Para o backend/API, confira o repositório [HordaMaster API](https://github.com/maisepmaya/back-end-puc-rio-project/)
 
+<div align="center" style="margin: 20px 0;">
+  <img src="src/assets/architecture.png" alt="Arquitetura da Aplicação" width="700"/>
+  <p><em>Arquitetura da aplicação</em></p>
+</div>
 
 ## 🚀 Tecnologias utilizadas
 
