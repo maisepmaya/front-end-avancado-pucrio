@@ -123,18 +123,14 @@ const SheetForm = ({
       newErrors.level = "Nível deve estar entre 0 e 100";
     }
 
-    const isInteger = (value: number) => /^\d+$/.test(value);
+    const isInteger = (value: string) => /^\d+$/.test(value);
 
-    if (
-      !isInteger(Number(form.ac)) ||
-      Number(form.ac) < 1 ||
-      Number(form.ac) > 100
-    ) {
+    if (!isInteger(form.ac) || Number(form.ac) < 1 || Number(form.ac) > 100) {
       newErrors.ac = "CA deve ser um número inteiro entre 1 e 100";
     }
 
     if (
-      !isInteger(Number(form.life)) ||
+      !isInteger(form.life) ||
       Number(form.life) < 1 ||
       Number(form.life) > 5000
     ) {
