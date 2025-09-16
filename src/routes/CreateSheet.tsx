@@ -122,13 +122,25 @@ const SheetForm = ({
     if (!form.level || Number(form.level) < 0 || Number(form.level) > 9999) {
       newErrors.level = "Nível deve estar entre 0 e 100";
     }
-    if (!form.ac || Number(form.ac) < 1 || Number(form.ac) > 9999) {
-      newErrors.ac = "CA deve estar entre 1 e 100";
+
+    const isInteger = (value: number) => /^\d+$/.test(value);
+
+    if (
+      !isInteger(Number(form.ac)) ||
+      Number(form.ac) < 1 ||
+      Number(form.ac) > 100
+    ) {
+      newErrors.ac = "CA deve ser um número inteiro entre 1 e 100";
     }
 
-    if (!form.life || Number(form.life) < 1 || Number(form.life) > 9999) {
-      newErrors.life = "Vida deve estar entre 1 e 5000";
+    if (
+      !isInteger(Number(form.life)) ||
+      Number(form.life) < 1 ||
+      Number(form.life) > 5000
+    ) {
+      newErrors.life = "Vida deve ser um número inteiro entre 1 e 5000";
     }
+
     if (!form.icon) {
       newErrors.icon = "Ícone é obrigatório";
     }
