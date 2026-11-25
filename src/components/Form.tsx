@@ -31,7 +31,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             htmlFor={id}
             className="block text-sm font-medium text-brown-800 mb-1"
           >
-            {label}:
+            {label}
           </label>
         )}
 
@@ -50,8 +50,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             id={id}
             className={`size-full px-3 ${
               icon ? "pl-8" : ""
-            } pt-2 pb-1 text-sm sm:text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-700 transition-colors ${
-              error ? "ring-2 ring-red-500 border-red-500" : ""
+            } pt-2 pb-1 text-sm sm:text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-600 transition-colors ${
+              error ? "ring-2 ring-blood-500" : ""
             } ${className}`}
             aria-describedby={describedBy || undefined}
             aria-invalid={error ? "true" : "false"}
@@ -60,7 +60,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         </div>
 
         {error && (
-          <p id={errorId} className="text-red-600 text-xs mt-1" role="alert">
+          <p id={errorId} className="text-blood-500 font-semibold text-xs mt-1" role="alert">
             {error}
           </p>
         )}
@@ -99,13 +99,13 @@ const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           htmlFor={id}
           className="block text-sm font-medium text-brown-800 mb-1"
         >
-          {label}:
+          {label}
         </label>
         <textarea
           ref={ref}
           id={id}
-          className={`w-full px-3 py-2 placeholder:text-brown-200 text-sm sm:text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-700 resize-none transition-colors ${
-            error ? "ring-2 ring-red-500 border-red-500" : ""
+          className={`w-full px-3 py-2 placeholder:text-brown-200 text-sm sm:text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-600 resize-none transition-colors ${
+            error ? "ring-2 ring-blood-500" : ""
           } ${className}`}
           aria-describedby={describedBy || undefined}
           aria-invalid={error ? "true" : "false"}
@@ -113,7 +113,7 @@ const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
         />
 
         {error && (
-          <p id={errorId} className="text-red-600 text-xs mt-1" role="alert">
+          <p id={errorId} className="text-blood-500 font-semibold text-xs mt-1" role="alert">
             {error}
           </p>
         )}
@@ -151,8 +151,8 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
         <select
           ref={ref}
           id={id}
-          className={`w-full px-3 py-2 bg-brown-400 text-brown-100 text-sm sm:text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-700 transition-colors ${
-            error ? "ring-2 ring-red-500 border-red-500" : ""
+          className={`w-full px-3 py-2 bg-brown-400 text-brown-100 text-sm sm:text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-600 transition-colors ${
+            error ? "ring-2 ring-blood-500" : ""
           } ${className}`}
           aria-describedby={describedBy || undefined}
           aria-invalid={error ? "true" : "false"}
@@ -166,7 +166,7 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
         </select>
 
         {error && (
-          <p id={errorId} className="text-red-600 text-xs mt-1" role="alert">
+          <p id={errorId} className="text-blood-500 font-semibold text-xs mt-1" role="alert">
             {error}
           </p>
         )}

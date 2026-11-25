@@ -2,6 +2,8 @@ import { type ReactNode, useState, useEffect } from "react";
 import type { Sheets, SheetCreation, Sheet } from "../../types/Sheet";
 import SheetContext from "./SheetContext";
 import { createSheet, deleteSheet, getAllSheets } from "../../services/api";
+import { toast } from "../../utils/toast";
+import { DEFAULT_ICON } from "../../data/icons";
 
 interface ISheetProvider {
   children: ReactNode;
@@ -18,23 +20,22 @@ const SheetProvider = ({ children }: ISheetProvider) => {
     sheetApiList: null,
   });
 
-  const handleCreate = (newSheet: SheetCreation) => {
-    createSheet(newSheet)
-      .then((createdSheet) => {
-        setData((prev) => ({
-          ...prev,
-          sheetList: {
-            ...prev.sheetList,
-            [createdSheet.id]: createdSheet,
-          },
-        }));
-      })
-      .catch((error) => {
-        console.error("Failed to create sheet:", error);
-        alert("Erro ao criar a ficha. Tente novamente.");
-      });
-
-    return true;
+  const handleCreate = async (newSheet: SheetCreation) => {
+    try {
+      const createdSheet = await createSheet(newSheet);
+      setData((prev) => ({
+        ...prev,
+        sheetList: {
+          ...prev.sheetList,
+          [createdSheet.id]: createdSheet,
+        },
+      }));
+      return true;
+    } catch (error) {
+      console.error("Failed to create sheet:", error);
+      toast("Não foi possível salvar a ficha. Tente novamente.", "error");
+      return false;
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -48,10 +49,11 @@ const SheetProvider = ({ children }: ISheetProvider) => {
             sheetList: newSheetList,
           };
         });
+        toast("Ficha apagada.", "info");
       })
       .catch((error) => {
         console.error("Failed to delete sheet:", error);
-        alert("Erro ao deletar a ficha. Tente novamente.");
+        toast("Não foi possível apagar a ficha. Tente novamente.", "error");
       });
 
     return true;
@@ -90,7 +92,9 @@ const SheetProvider = ({ children }: ISheetProvider) => {
           (character) =>
             ({
               id: character.index,
-              icon: `https://www.dnd5eapi.co${character.image}`,
+              icon: character.image
+                ? `https://www.dnd5eapi.co${character.image}`
+                : DEFAULT_ICON,
               name: character.name,
               life: String(character.hit_points),
               ac: character.armor_class.map((ac: any) => ac.value).join(", "),
@@ -128,9 +132,7 @@ Imunidade a Condição: ${
 
         return sheets;
       } catch (error) {
-        alert(
-          "Ocorreu um erro na comunicação com o servidor. Tente novamente."
-        );
+        console.error(error);
         return null;
       }
     }
@@ -146,7 +148,6 @@ Imunidade a Condição: ${
       };
 
       try {
-        console.log("teste");
         const sheets = await getAllSheets("independent");
 
         newSheets.sheetList = sheets ?? {};

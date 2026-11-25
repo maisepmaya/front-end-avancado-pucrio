@@ -9,9 +9,8 @@ interface IHexagonButton extends ButtonHTMLAttributes<HTMLButtonElement> {
 const HexagonButton = ({ icon, ...rest }: IHexagonButton) => {
   return (
     <button
-      className={
-        "cursor-pointer pointer active:scale-95 transition-transform hover:scale-105 aspect-square "
-      }
+      type="button"
+      className="aspect-square size-full cursor-pointer transition-transform hover:scale-105 active:scale-95"
       {...rest}
     >
       <ImgDiv src={Frame} className={"size-full"}>

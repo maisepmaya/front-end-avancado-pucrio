@@ -1,13 +1,14 @@
 import { useRef } from "react";
 
-function useDebounce(cb: Function, delay: any) {
-  const timeoutId = useRef<number>(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function useDebounce<Args extends any[]>(cb: (...args: Args) => void, delay: number) {
+  const timeoutId = useRef<number | null>(null);
 
-  return function (...args: any) {
+  return function (...args: Args) {
     if (timeoutId.current) {
-      clearTimeout(timeoutId.current);
+      window.clearTimeout(timeoutId.current);
     }
-    timeoutId.current = setTimeout(() => cb(...args), delay);
+    timeoutId.current = window.setTimeout(() => cb(...args), delay);
   };
 }
 

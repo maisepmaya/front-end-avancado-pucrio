@@ -10,7 +10,7 @@ interface ISheetContextData {
     ac,
     info,
     icon,
-  }: SheetCreation) => boolean;
+  }: SheetCreation) => Promise<boolean>;
   handleDelete: (id: string) => boolean;
   getSheetApi: (obj: {
     count: number;

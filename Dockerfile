@@ -8,6 +8,10 @@ RUN npm install
 
 COPY . .
 
+# Opcional: aponte para o back-end. Sem isso, a imagem roda em modo demo.
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
 FROM node:20-alpine

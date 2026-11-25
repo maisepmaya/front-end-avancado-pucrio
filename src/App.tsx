@@ -1,4 +1,5 @@
 import NavBar from "./components/NavBar";
+import Toaster from "./components/Toaster";
 import CardProvider from "./contexts/CardContext/CardContextProvider";
 import SheetProvider from "./contexts/SheetContext/SheetContextProvider";
 import "./Global.css";
@@ -8,11 +9,12 @@ function App() {
   return (
     <CardProvider>
       <SheetProvider>
-        <div className="size-full min-h-screen flex flex-col-reverse sm:flex-col bg-linear-to-t from-brown-700 to-brown-900 to-50%">
+        <div className="tavern-bg flex size-full min-h-screen flex-col-reverse sm:flex-col">
           <NavBar />
           <div className="flex-1 relative">
             <Outlet />
           </div>
+          <Toaster />
         </div>
       </SheetProvider>
     </CardProvider>

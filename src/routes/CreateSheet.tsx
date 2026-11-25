@@ -1,67 +1,74 @@
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, type ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
+import {
+  ArrowRightIcon,
+  ShieldIcon,
+  HeartIcon,
+  StarIcon,
+  MinusIcon,
+  PlusIcon,
+  LightbulbIcon,
+  FloppyDiskIcon,
+} from "@phosphor-icons/react";
+
 import SheetBar from "../components/SheetBar";
 import ImgDiv from "../components/ImgDiv";
-import { FormSelect, FormInput, FormTextarea } from "../components/Form";
-import { CaretDownIcon } from "@phosphor-icons/react";
-
-import Dice from "./../assets/flaticon/dice.png";
-import Banshee from "./../assets/flaticon/banshee.png";
-import Cyclops from "./../assets/flaticon/cyclops.png";
-import Devil from "./../assets/flaticon/devil.png";
-import Ghost from "./../assets/flaticon/ghost.png";
-import Goblin from "./../assets/flaticon/goblin.png";
-import Grim from "./../assets/flaticon/grim-reaper.png";
-import Knight from "./../assets/flaticon/knight.png";
-import Monster from "./../assets/flaticon/monster.png";
-import Ninja from "./../assets/flaticon/ninja.png";
-import Orc from "./../assets/flaticon/orc.png";
-import Pirate from "./../assets/flaticon/pirate.png";
-import Vampire from "./../assets/flaticon/vampire.png";
-import Viking from "./../assets/flaticon/viking.png";
-import Werewolf from "./../assets/flaticon/werewolf.png";
-import Wizard from "./../assets/flaticon/wizard.png";
-import Zombie from "./../assets/flaticon/zombie.png";
+import { FormInput, FormTextarea } from "../components/Form";
+import ButtonDefault from "../components/ButtonDefault";
+import ConfirmModal from "../components/ConfirmModal";
+import useSheet from "../contexts/SheetContext/useSheet";
+import useCard from "../contexts/CardContext/useCard";
+import type { SheetCreation } from "../types/Sheet";
+import { ICONS, DEFAULT_ICON } from "../data/icons";
+import { toast } from "../utils/toast";
 
 import SheetFold from "./../assets/sheet-fold-90.png";
-import ButtonDefault from "../components/ButtonDefault";
-import useSheet from "../contexts/SheetContext/useSheet";
-import type { SheetAttr, SheetCreation } from "../types/Sheet";
-import ConfirmModal from "../components/ConfirmModal";
-import useCard from "../contexts/CardContext/useCard";
+import CardBase from "./../assets/card-base.png";
+import CardTitle from "./../assets/card-title.png";
+import FullHeart from "./../assets/full-heart.png";
+import Shield from "./../assets/shield.png";
+import CardTag from "./../assets/card-tag.png";
 
-const icons = [
-  { value: Dice, label: "Dado" },
-  { value: Banshee, label: "Banshee" },
-  { value: Cyclops, label: "Ciclope" },
-  { value: Devil, label: "Demônio" },
-  { value: Ghost, label: "Fantasma" },
-  { value: Goblin, label: "Goblin" },
-  { value: Grim, label: "Ceifador" },
-  { value: Knight, label: "Cavalheiro" },
-  { value: Monster, label: "Monstro" },
-  { value: Ninja, label: "Ninja" },
-  { value: Orc, label: "Orc" },
-  { value: Pirate, label: "Pirata" },
-  { value: Vampire, label: "Vampiro" },
-  { value: Viking, label: "Viking" },
-  { value: Werewolf, label: "Lobisomem" },
-  { value: Wizard, label: "Mago" },
-  { value: Zombie, label: "Zumbi" },
-];
+type FormErrors = Partial<Record<"name" | "level" | "life" | "ac", string>>;
 
-interface FormErrors {
-  name?: string;
-  level?: string;
-  life?: string;
-  ac?: string;
-  icon?: string;
-}
+const EMPTY_FORM: SheetCreation = {
+  name: "",
+  level: "1",
+  life: "10",
+  ac: "10",
+  info: "",
+  icon: DEFAULT_ICON,
+};
 
-const CreateSheet: React.FC = () => {
-  const { handleCreate, handleDelete } = useSheet();
+const LIMITS = {
+  level: { min: 0, max: 100 },
+  life: { min: 1, max: 5000 },
+  ac: { min: 1, max: 100 },
+} as const;
+
+const isInteger = (value: string) => /^\d+$/.test(value);
+
+const validate = (form: SheetCreation): FormErrors => {
+  const errors: FormErrors = {};
+
+  if (!form.name.trim()) errors.name = "Dê um nome para a criatura.";
+
+  (Object.keys(LIMITS) as Array<keyof typeof LIMITS>).forEach((field) => {
+    const { min, max } = LIMITS[field];
+    const value = form[field];
+    if (!isInteger(value) || Number(value) < min || Number(value) > max) {
+      errors[field] = `Use um número entre ${min} e ${max}.`;
+    }
+  });
+
+  return errors;
+};
+
+const CreateSheet = () => {
+  const { handleDelete, sheetList } = useSheet();
   const { handleRemoveBySheetId } = useCard();
-  const [modal, openModal] = useState({ active: false, param: "" });
+  const [toDelete, setToDelete] = useState<string | null>(null);
 
   const handleDeleteSheet = (sheetId: string) => {
     handleDelete(sheetId);
@@ -70,334 +77,394 @@ const CreateSheet: React.FC = () => {
 
   return (
     <div className="absolute inset-0 flex flex-row">
-      {modal.active &&
+      {toDelete &&
         createPortal(
           <ConfirmModal
-            onClose={() => openModal((prev) => ({ ...prev, active: false }))}
-            onConfirm={() => handleDeleteSheet(modal.param)}
-            title="Deletar Ficha"
-            text={
-              "Deseja realmente apagar esta ficha? Todos os cartões vinculados a ela serão apagados junto."
-            }
+            onClose={() => setToDelete(null)}
+            onConfirm={() => handleDeleteSheet(toDelete)}
+            title="Apagar ficha?"
+            text={`“${sheetList[toDelete]?.name ?? "Esta ficha"}” será apagada, e os inimigos dela que estiverem na mesa também saem.`}
+            confirmText="Apagar"
+            tone="danger"
           />,
           document.body
         )}
 
-      {/* SideBar */}
-      <SheetBar
-        handleDeleteSheet={(param) => openModal({ param, active: true })}
-      />
+      <SheetBar handleDeleteSheet={setToDelete} />
 
-      {/* Form */}
-      <SheetForm handleCreate={handleCreate} />
+      <SheetForm />
     </div>
   );
 };
 
-const SheetForm = ({
-  handleCreate,
-}: {
-  handleCreate: (sheet: SheetCreation) => boolean;
-}) => {
+// ---------------------------------------------------------------------------
+
+const SheetForm = () => {
+  const { handleCreate } = useSheet();
+  const [form, setForm] = useState<SheetCreation>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [openForm, setOpenForm] = useState(false);
-  const [form, setForm] = useState<SheetCreation>({
-    name: "",
-    level: "1",
-    life: "1",
-    ac: "1",
-    info: "",
-    icon: Dice,
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!form.name.trim()) {
-      newErrors.name = "Nome é obrigatório";
-    } else if (form.name.length > 120) {
-      newErrors.name = "Nome deve ter no máximo 120 caracteres";
-    }
-    if (!form.level || Number(form.level) < 0 || Number(form.level) > 9999) {
-      newErrors.level = "Nível deve estar entre 0 e 100";
-    }
-
-    const isInteger = (value: string) => /^\d+$/.test(value);
-
-    if (!isInteger(form.ac) || Number(form.ac) < 1 || Number(form.ac) > 100) {
-      newErrors.ac = "CA deve ser um número inteiro entre 1 e 100";
-    }
-
-    if (
-      !isInteger(form.life) ||
-      Number(form.life) < 1 ||
-      Number(form.life) > 5000
-    ) {
-      newErrors.life = "Vida deve ser um número inteiro entre 1 e 5000";
-    }
-
-    if (!form.icon) {
-      newErrors.icon = "Ícone é obrigatório";
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
+  const update = (patch: Partial<SheetCreation>) => {
+    const next = { ...form, ...patch };
+    setForm(next);
+    // Depois da primeira tentativa, os erros somem assim que o campo é corrigido.
+    if (submitted) setErrors(validate(next));
   };
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => update({ [e.target.name]: e.target.value });
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      handleCreate(form);
-      setForm({
-        name: "",
-        level: "1",
-        life: "1",
-        ac: "1",
-        info: "",
-        icon: Dice,
-      });
-      setIsModalOpen(true);
+    setSubmitted(true);
+    const found = validate(form);
+    setErrors(found);
+
+    if (Object.keys(found).length) {
+      const first = Object.keys(found)[0];
+      document.getElementById(`sheet-${first}`)?.focus();
+      return;
+    }
+
+    setSaving(true);
+    const ok = await handleCreate({ ...form, name: form.name.trim() });
+    setSaving(false);
+
+    if (ok) {
+      toast(`“${form.name.trim()}” foi para Minhas fichas!`, "success");
+      setForm(EMPTY_FORM);
+      setSubmitted(false);
+      setErrors({});
     }
   };
 
   return (
-    <>
-      {/* Modal */}
-      {isModalOpen &&
-        createPortal(
-          <ConfirmModal
-            title="Ficha Criada"
-            onClose={() => setIsModalOpen(false)}
-            text={"Sua ficha foi criada com sucesso!"}
-          />,
-          document.body
-        )}
-
-      {/* Form */}
-      <div className="w-full flex justify-center">
-        <div className="flex w-full sm:w-auto group items-center justify-center transition-all align-center lg:w-2xl 2xl:w-4xl 2xl:h-160">
-          <div className="size-full p-3 relative sm:pt-16 sm:pr-10 overflow-y-auto overflow-x-hidden">
-            <div className="transition-all z-5 sm:min-w-sm relative bg-tag-bg w-full rounded-lg shadow-lg">
-              {/* Header */}
-              <div
-                onClick={() => setOpenForm((prev) => !prev)}
-                className="hidden sm:flex absolute h-24 -top-12 -left-1 -right-10 z-5 active:brightness-95 cursor-pointer"
-              >
-                <div className="bg-brown-900 -right-5 -left-7 h-full -top-10 absolute"></div>
-                <div className="size-full">
-                  <ImgDiv src={SheetFold} className="size-full" />
-                </div>
-                <div className="z-80 text-brown-700 flex items-center justify-between absolute font-bold text-xl left-25 xl:left-28 right-8 top-5">
-                  Criar Ficha
-                  <CaretDownIcon
-                    weight={openForm ? "fill" : "bold"}
-                    className={`text-brown-700 group-hover:rotate-180 transition-transform ${
-                      openForm ? "rotate-180" : "rotate-0"
-                    }`}
-                    size={24}
-                  />
-                </div>
+    <div className="flex-1 overflow-y-auto">
+      <div className="mx-auto grid max-w-5xl gap-6 px-4 pt-4 pb-28 sm:px-8 sm:pt-6 sm:pb-10 xl:grid-cols-[minmax(0,1fr)_300px]">
+        {/* Formulário */}
+        <section aria-labelledby="create-title" className="animate-slide-up">
+          <div className="relative z-10 -mb-24 hidden aspect-[853/167] sm:block">
+            <ImgDiv src={SheetFold} className="absolute inset-0">
+              <div className="flex size-full items-center pr-10 pb-2 pl-[15%] text-left">
+                <h1 id="create-title" className="pt-1 text-2xl font-bold text-brown-700">
+                  Nova ficha de inimigo
+                </h1>
               </div>
-
-              {/* Content */}
-              <div
-                className={`transition-all w-full p-8 ${
-                  !openForm && "sm:p-0 sm:max-h-0 sm:group-hover:max-h-160"
-                } sm:group-hover:p-8 overflow-hidden shadow-lg shadow-brown-900`}
-              >
-                <div className="flex sm:hidden z-80 text-brown-700 items-center justify-center font-bold text-xl mb-4">
-                  Criar Ficha
-                </div>
-
-                <form className="space-y-4">
-                  {/* Name */}
-                  <FormInput
-                    label="Nome"
-                    id="sheet-name"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    maxLength={120}
-                    placeholder="Insira o nome do personagem..."
-                    className={`bg-brown-400 text-brown-100 placeholder:text-brown-200 ${
-                      errors.name && "ring-red-800 ring-2"
-                    }`}
-                  />
-                  <div className="w-full flex justify-between flex-row-reverse">
-                    <p className="text-brown-300 text-xs text-end mt-1">
-                      {form.name.length}/120
-                    </p>
-                    {errors.name && (
-                      <p className="text-red-800 text-xs mt-1">{errors.name}</p>
-                    )}
-                  </div>
-
-                  {/* Level / Life / AC */}
-                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-                    {["level", "life", "ac"].map((field) => (
-                      <div key={field}>
-                        <FormInput
-                          label={
-                            field === "level"
-                              ? "Nível"
-                              : field === "life"
-                              ? "Vida"
-                              : "CA"
-                          }
-                          id={`sheet-${field}`}
-                          name={field}
-                          type="number"
-                          value={form[field as SheetAttr]}
-                          onChange={handleChange}
-                          min={field === "level" ? "0" : "1"}
-                          max={field === "life" ? "50000" : "100"}
-                          className={`bg-brown-400 text-brown-100 ${
-                            errors[field as keyof FormErrors] &&
-                            "ring-red-800 ring-2"
-                          }`}
-                        />
-                        {errors[field as keyof FormErrors] && (
-                          <p
-                            key={field}
-                            className="text-red-800 text-start w-full text-xs mt-1"
-                          >
-                            {errors[field as keyof FormErrors]}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Image and Information */}
-                  <div className="flex flex-col sm:flex-row justify-center items-start gap-4 w-full">
-                    <div className="flex flex-col items-center w-full sm:w-1/4">
-                      <label
-                        htmlFor="sheet-select-image"
-                        className="mb-2 text-sm font-medium text-brown-700"
-                      >
-                        Ícone:
-                      </label>
-                      <div className="w-16 h-16 bg-brown-900 rounded shadow border-4 border-brown-400 mb-2">
-                        <img
-                          src={form.icon}
-                          alt="Icon"
-                          className="p-2 w-full h-full object-contain"
-                        />
-                      </div>
-                      <FormSelect
-                        name="icon"
-                        id="sheet-select-image"
-                        value={form.icon}
-                        optionList={icons.map((icon) => ({
-                          value: icon.value,
-                          label: icon.label,
-                        }))}
-                        onChange={handleChange}
-                        className="bg-brown-400 text-brown-100"
-                      />
-                      {errors.icon && (
-                        <p className="text-red-800 text-xs mt-1">
-                          {errors.icon}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="w-full sm:w-3/4">
-                      <FormTextarea
-                        label="Informações"
-                        id="sheet-info"
-                        name="info"
-                        value={form.info}
-                        onChange={handleChange}
-                        rows={4}
-                        className="bg-brown-400 text-brown-100"
-                        placeholder="Adicione informações extras aqui..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="flex justify-center mt-6">
-                    <ButtonDefault
-                      onClick={handleSubmit}
-                      className="bg-teal-800 text-brown-200 shadow-teal-600"
-                      text="Salvar"
-                    />
-                  </div>
-
-                  {/* Icons credit */}
-                  <div className="absolute text-brown-400 bottom-2 text-xs right-2">
-                    Icons made by{" "}
-                    <a
-                      target="_blank"
-                      href="https://www.freepik.com"
-                      title="Freepik"
-                      className="text-brown-700 underline"
-                    >
-                      Freepik
-                    </a>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-0 flex justify-center z-0 p-4 mt-16 lg:p-8 inset-0">
-              <div className="max-w-2xl w-full rounded-lg overflow-hidden">
-                <div className="p-6">
-                  <p className="sm:text-sm lg:text-base md:text-base mb-4 text-brown-100">
-                    Bem-vindo! Aqui é o lugar onde você dá vida aos inimigos que
-                    vão testar a coragem dos seus jogadores.
-                  </p>
-                  <ul className="text-xs lg:text-sm list-disc list-inside space-y-2 mb-4 text-brown-200">
-                    <li>
-                      Preencha o nome, defina o nível, os pontos de vida, a
-                      classe de armadura e adicione informações extras para não
-                      esquecer nenhum detalhe dessa criatura.
-                    </li>
-                    <li>
-                      Escolha um ícone que combine com o terror que ela vai
-                      espalhar na sua mesa!
-                    </li>
-                    <li>
-                      Quando terminar, clique em Salvar para guardar sua ficha.
-                      Ela ficará prontinha e organizada na página inicial,
-                      dentro de Minhas Fichas, para você invocar quantas cópias
-                      quiser durante o combate.
-                    </li>
-                    <li>
-                      E se a criatura não estiver mais à altura da sua horda?
-                      Sem problema: use o botão de lixeira a esquerda e mande
-                      ela para o limbo sem dó!
-                    </li>
-                  </ul>
-                  <p className="text-sm lg:text-base font-semibold text-brown-100 mb-4">
-                    Prepare-se: suas sessões de RPG nunca mais serão as mesmas
-                    com suas hordas sob controle. Crie, solte e vença!
-                  </p>
-                  <p className="text-xs font-semibold text-brown-400">
-                    Alias! Você pode clicar no pergaminho para deixa-lo aberto!
-                  </p>
-                </div>
-              </div>
-            </div>
+            </ImgDiv>
           </div>
-        </div>
+          <h1 className="mb-3 pl-10 text-left text-2xl font-bold text-brown-100 sm:hidden">
+            Nova ficha de inimigo
+          </h1>
+
+          <form
+            noValidate
+            onSubmit={handleSubmit}
+            className="mx-1 space-y-5 rounded-b-xl rounded-t-md bg-tag-bg p-5 text-left shadow-[0_6px_0_var(--color-brown-800),0_16px_32px_rgb(0_0_0/0.35)] sm:mx-5 sm:p-7 sm:pt-16"
+          >
+            {/* Nome */}
+            <div>
+              <FormInput
+                label="Nome"
+                id="sheet-name"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                maxLength={120}
+                placeholder="Ex.: Goblin Saqueador"
+                error={errors.name}
+                className="bg-brown-50 text-brown-900 ring-1 ring-brown-300 placeholder:text-brown-400"
+              />
+              <p className="-mt-1 text-right text-xs text-brown-500">
+                {form.name.length}/120
+              </p>
+            </div>
+
+            {/* Atributos */}
+            <fieldset>
+              <legend className="mb-2 text-sm font-bold text-brown-800">
+                Atributos
+              </legend>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <NumberField
+                  id="sheet-level"
+                  label="Nível"
+                  hint="Nível ou nível de desafio (ND)"
+                  icon={<StarIcon weight="fill" />}
+                  value={form.level}
+                  error={errors.level}
+                  {...LIMITS.level}
+                  onChange={(level) => update({ level })}
+                />
+                <NumberField
+                  id="sheet-life"
+                  label="Vida máx."
+                  hint="Pontos de vida (PV) máximos"
+                  icon={<HeartIcon weight="fill" />}
+                  value={form.life}
+                  error={errors.life}
+                  {...LIMITS.life}
+                  onChange={(life) => update({ life })}
+                />
+                <NumberField
+                  id="sheet-ac"
+                  label="Armadura"
+                  hint="Classe de armadura (CA)"
+                  icon={<ShieldIcon weight="fill" />}
+                  value={form.ac}
+                  error={errors.ac}
+                  {...LIMITS.ac}
+                  onChange={(ac) => update({ ac })}
+                />
+              </div>
+            </fieldset>
+
+            {/* Ícone */}
+            <fieldset>
+              <legend className="mb-2 text-sm font-bold text-brown-800">
+                Ícone{" "}
+                <span className="font-normal text-brown-500">
+                  — {ICONS.find((i) => i.src === form.icon)?.label}
+                </span>
+              </legend>
+              <div
+                role="radiogroup"
+                aria-label="Ícone da criatura"
+                className="grid grid-cols-6 gap-2 sm:grid-cols-9"
+              >
+                {ICONS.map((icon) => {
+                  const selected = form.icon === icon.src;
+                  return (
+                    <button
+                      key={icon.key}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      aria-label={icon.label}
+                      title={icon.label}
+                      onClick={() => update({ icon: icon.src })}
+                      className={`aspect-square rounded-lg border-[3px] bg-brown-900 p-1.5 transition-all hover:-translate-y-0.5 ${
+                        selected
+                          ? "scale-105 border-gold-300 shadow-[0_3px_0_var(--color-gold-500)]"
+                          : "border-brown-300 opacity-75 shadow-[0_3px_0_var(--color-brown-400)] hover:opacity-100"
+                      }`}
+                    >
+                      <img src={icon.src} alt="" className="size-full object-contain" />
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
+
+            {/* Anotações */}
+            <FormTextarea
+              label="Anotações"
+              id="sheet-info"
+              name="info"
+              value={form.info}
+              onChange={handleChange}
+              rows={4}
+              className="bg-brown-50 text-brown-900 ring-1 ring-brown-300 placeholder:text-brown-400"
+              placeholder="Habilidades, táticas, fraquezas... tudo que você quer lembrar no meio do combate."
+            />
+
+            <div className="flex flex-col-reverse items-stretch gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-brown-500">
+                Ícones por{" "}
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  href="https://www.freepik.com"
+                  className="underline hover:text-brown-700"
+                >
+                  Freepik
+                </a>
+              </p>
+              <div className="flex gap-3">
+                <ButtonDefault
+                  variant="neutral"
+                  text="Limpar"
+                  onClick={() => {
+                    setForm(EMPTY_FORM);
+                    setErrors({});
+                    setSubmitted(false);
+                  }}
+                  className="flex-1 sm:flex-none"
+                />
+                <ButtonDefault
+                  type="submit"
+                  disabled={saving}
+                  icon={<FloppyDiskIcon size={18} weight="fill" />}
+                  text={saving ? "Salvando..." : "Salvar ficha"}
+                  className="flex-1 sm:flex-none"
+                />
+              </div>
+            </div>
+          </form>
+        </section>
+
+        {/* Prévia + dicas */}
+        <aside className="flex flex-col gap-5 text-left xl:pt-10" aria-label="Prévia e dicas">
+          <div>
+            <h2 className="mb-3 text-sm font-bold tracking-wider text-brown-300 uppercase">
+              Prévia na mesa
+            </h2>
+            <CardPreview form={form} />
+          </div>
+
+          <div className="rounded-xl bg-brown-950/40 p-4 text-sm text-brown-200 ring-1 ring-brown-700">
+            <h2 className="mb-2 flex items-center gap-2 font-bold text-brown-100">
+              <LightbulbIcon weight="fill" className="fill-gold-300" /> Dicas do mestre
+            </h2>
+            <ul className="list-disc space-y-1.5 pl-5 marker:text-brown-500">
+              <li>Uma ficha vira quantas cópias você quiser — Goblin 1, Goblin 2, Goblin 3...</li>
+              <li>Use as anotações para habilidades que você sempre esquece no calor da batalha.</li>
+              <li>Fichas que não servem mais vão para o limbo pela lixeira, na barra lateral.</li>
+            </ul>
+            <Link
+              to="/"
+              className="mt-3 inline-flex items-center gap-1 rounded font-bold text-gold-300 hover:underline"
+            >
+              Ir para a mesa de combate <ArrowRightIcon weight="bold" />
+            </Link>
+          </div>
+        </aside>
       </div>
-    </>
+    </div>
   );
 };
+
+// ---------------------------------------------------------------------------
+
+const NumberField = ({
+  id,
+  label,
+  hint,
+  icon,
+  value,
+  min,
+  max,
+  error,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  hint: string;
+  icon: ReactNode;
+  value: string;
+  min: number;
+  max: number;
+  error?: string;
+  onChange: (value: string) => void;
+}) => {
+  const step = (delta: number) => {
+    const n = isInteger(value) ? Number(value) : min;
+    onChange(String(Math.min(max, Math.max(min, n + delta))));
+  };
+  const errorId = `${id}-error`;
+
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        title={hint}
+        className="mb-1 flex items-center gap-1.5 text-sm font-medium whitespace-nowrap text-brown-800"
+      >
+        <span className="text-brown-500">{icon}</span>
+        {label}
+        <span className="text-xs font-normal text-brown-500">
+          ({hint.match(/\((\w+)\)/)?.[1]})
+        </span>
+      </label>
+      <div
+        className={`flex items-stretch overflow-hidden rounded-lg bg-brown-50 ring-1 focus-within:ring-2 ${
+          error ? "ring-2 ring-blood-500" : "ring-brown-300 focus-within:ring-brown-600"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          aria-label={`Diminuir ${label}`}
+          className="px-2.5 text-brown-600 hover:bg-brown-200"
+        >
+          <MinusIcon weight="bold" />
+        </button>
+        <input
+          id={id}
+          type="number"
+          inputMode="numeric"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
+          className="w-full min-w-0 bg-transparent py-2 text-center text-lg font-bold text-brown-900"
+        />
+        <button
+          type="button"
+          onClick={() => step(1)}
+          aria-label={`Aumentar ${label}`}
+          className="px-2.5 text-brown-600 hover:bg-brown-200"
+        >
+          <PlusIcon weight="bold" />
+        </button>
+      </div>
+      {error && (
+        <p id={errorId} className="mt-1 text-xs font-semibold text-blood-500">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
+
+/** Miniatura do cartão como ele vai aparecer na mesa de combate. */
+const CardPreview = ({ form }: { form: SheetCreation }) => (
+  <div className="relative mx-auto w-[260px] pt-2 pl-2 select-none" aria-hidden>
+    <ImgDiv src={CardBase} className="aspect-[12/8] w-full">
+      <div className="relative flex size-full flex-col items-center">
+        <div className="absolute -top-3 -left-3 z-20 size-10 rounded-lg border-[3px] border-brown-200 bg-brown-900 p-1 shadow-[2px_2px_0_#9b8356]">
+          <img src={form.icon} alt="" className="size-full object-contain" />
+        </div>
+        <div className="absolute -top-2 right-0 left-0 flex h-[18%] justify-center">
+          <ImgDiv src={CardTitle} className="h-full w-[66%]">
+            <div className="flex size-full rotate-[3deg] items-center justify-center gap-1 px-4">
+              <span className="mt-1 truncate font-title text-[11px] font-bold text-brown-800">
+                {form.name.trim() || "Sem nome"} 1
+              </span>
+              <span className="shrink-0 rounded bg-brown-800 px-1 text-[10px] font-bold text-brown-200">
+                Nv {form.level || "?"}
+              </span>
+            </div>
+          </ImgDiv>
+        </div>
+        <div className="mt-6 flex h-[58%] w-[70%] items-center justify-center gap-6">
+          <ImgDiv src={FullHeart} className="aspect-square h-[72%]">
+            <span className="text-xl font-extrabold text-brown-50 [text-shadow:0_2px_0_rgb(0_0_0/0.35)]">
+              {form.life || "?"}
+            </span>
+          </ImgDiv>
+          <ImgDiv src={Shield} className="mt-5 aspect-square h-[42%]">
+            <span className="pt-1 text-[10px] leading-none font-bold text-brown-50">
+              CA
+              <br />
+              {form.ac || "?"}
+            </span>
+          </ImgDiv>
+        </div>
+        <div className="absolute -right-3 -bottom-4 left-0 flex h-[42%] justify-end">
+          <ImgDiv src={CardTag} className="h-full w-[85%]">
+            <p className="mr-16 line-clamp-3 w-[70%] rotate-[-2deg] px-2 pt-2 text-left text-[9px] leading-snug text-brown-700">
+              {form.info.trim() || "Suas anotações aparecem aqui."}
+            </p>
+          </ImgDiv>
+        </div>
+      </div>
+    </ImgDiv>
+  </div>
+);
 
 export default CreateSheet;

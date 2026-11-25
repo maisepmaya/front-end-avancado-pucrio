@@ -1,21 +1,57 @@
-import React, { type ButtonHTMLAttributes } from "react";
+import React, { type ButtonHTMLAttributes, type ReactNode } from "react";
+
+export type ButtonVariant = "primary" | "danger" | "neutral" | "ghost";
 
 interface IButtonDefault extends ButtonHTMLAttributes<HTMLButtonElement> {
-  className: string;
-  text: string;
+  text?: string;
+  icon?: ReactNode;
+  variant?: ButtonVariant;
+  size?: "sm" | "md";
+  className?: string;
+  ref?: React.Ref<HTMLButtonElement>;
 }
+
+/**
+ * Botão "de brinquedo": cor chapada + sombra deslocada sem desfoque, no mesmo
+ * espírito das ilustrações (contorno firme, volume simples).
+ */
+const variants: Record<ButtonVariant, string> = {
+  primary:
+    "bg-green-500 text-brown-50 shadow-[0_4px_0_var(--color-green-700)] hover:bg-green-600",
+  danger:
+    "bg-blood-500 text-brown-50 shadow-[0_4px_0_var(--color-blood-600)] hover:bg-blood-600",
+  neutral:
+    "bg-brown-600 text-brown-100 shadow-[0_4px_0_var(--color-brown-800)] hover:bg-brown-500",
+  ghost:
+    "bg-transparent text-brown-200 ring-2 ring-inset ring-brown-500/70 hover:bg-brown-700/60 shadow-none",
+};
+
+const sizes = {
+  sm: "text-sm px-3 py-1.5 gap-1.5",
+  md: "text-base px-5 py-2 gap-2",
+};
+
 export const ButtonDefault: React.FC<IButtonDefault> = ({
-  className,
+  className = "",
   children,
   text,
+  icon,
+  variant = "primary",
+  size = "md",
+  type = "button",
+  ref,
   ...rest
 }) => {
   return (
     <button
+      ref={ref}
+      type={type}
       {...rest}
-      className={`font-bold px-6 py-1 shadow-[3px_3px_0] hover:scale-110 active:scale-95 transition-transform ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg font-title font-semibold leading-none whitespace-nowrap transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 disabled:hover:translate-y-0 ${variants[variant]} ${sizes[size]} ${className}`}
     >
-      {text}
+      {icon}
+      {text && <span className="pt-0.5">{text}</span>}
+      {children}
     </button>
   );
 };

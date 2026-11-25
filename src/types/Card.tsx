@@ -7,6 +7,7 @@ export interface Card {
   info: string;
   id: string;
   sheetId: string;
+  icon?: string;
 }
 
 export type Cards = Record<string, Card>;

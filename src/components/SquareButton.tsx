@@ -29,10 +29,10 @@ const SquareButton = ({
 
   return (
     <button
-      className={
-        "cursor-pointer active:scale-95 active:brightness-95 transition-transform hover:scale-105 aspect-square " +
-        className
-      }
+      type="button"
+      className={`aspect-square cursor-pointer transition-transform hover:scale-110 active:scale-95 active:brightness-95 ${
+        className ?? ""
+      }`}
       {...rest}
     >
       <ImgDiv src={types[btnType]} className={"size-full"}>

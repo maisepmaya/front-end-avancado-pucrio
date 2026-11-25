@@ -2,6 +2,7 @@ import { type ReactNode, useState, useEffect } from "react";
 import type { Sheet } from "../../types/Sheet";
 import type { Card, Cards } from "../../types/Card";
 import CardContext from "./CardContext";
+import { toast } from "../../utils/toast";
 import {
   getAllCards,
   createCard,
@@ -38,10 +39,11 @@ const CardProvider = ({ children }: ICardProvider) => {
             [createdCard.id]: createdCard,
           },
         }));
+        toast(`${createdCard.name} entrou na mesa!`, "success");
       })
       .catch((error) => {
         console.error("Failed to create card:", error);
-        alert("Erro ao criar o card. Tente novamente.");
+        toast("Não foi possível invocar esse inimigo. Tente novamente.", "error");
       });
   };
 
@@ -59,7 +61,7 @@ const CardProvider = ({ children }: ICardProvider) => {
       })
       .catch((error) => {
         console.error("Failed to delete card:", error);
-        alert("Erro ao deletar o card. Tente novamente.");
+        toast("Não foi possível remover o cartão. Tente novamente.", "error");
       });
 
     return true;
@@ -80,17 +82,16 @@ const CardProvider = ({ children }: ICardProvider) => {
   };
 
   const handleChange = async (id: string, card: Card) => {
-    // salvar depois (ex: ao sair do input ou com debounce)
     await updateCard(card).catch((error) => {
       console.error("Failed to update card:", error);
-      alert("Erro ao atualizar o card. Tente novamente.");
+      toast("Não foi possível salvar a alteração do cartão.", "error");
     });
 
     setData((prev) => ({
       ...prev,
       cardList: {
         ...prev.cardList,
-        [id]: card, // atualização otimista
+        [id]: card,
       },
     }));
   };
@@ -99,10 +100,11 @@ const CardProvider = ({ children }: ICardProvider) => {
     deleteAllCards()
       .then(() => {
         setData({ cardList: {} });
+        toast("Combate encerrado. A mesa está limpa!", "success");
       })
       .catch((error) => {
         console.error("Failed to delete all cards:", error);
-        alert("Erro ao limpar os cards. Tente novamente.");
+        toast("Não foi possível limpar a mesa. Tente novamente.", "error");
       });
   };
 
