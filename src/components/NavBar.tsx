@@ -1,90 +1,180 @@
-import type { AnchorHTMLAttributes } from "react";
-import ImgDiv from "./ImgDiv";
 import { Link, useLocation } from "react-router-dom";
+import {
+  PencilSimpleLineIcon,
+  ScrollIcon,
+  SwordIcon,
+  type Icon,
+} from "@phosphor-icons/react";
 
 import Logo from "./../assets/logo.png";
-import BigWood from "./../assets/bigWood.png";
 import Paper from "./../assets/paper.png";
+import BigWood from "./../assets/bigWood.png";
 
 interface ITab {
-  src: string;
-  name: string;
+  to: string;
+  match: string;
+  label: string;
+  icon: Icon;
+  /** Inclinação de "papel pregado à mão" — só nas abas inativas. */
+  tilt: string;
 }
 
-const NavBar = () => {
+const TABS: ITab[] = [
+  { to: "/", match: "/", label: "Mesa", icon: SwordIcon, tilt: "-rotate-2" },
+  {
+    to: "/criar",
+    match: "/criar",
+    label: "Criar ficha",
+    icon: PencilSimpleLineIcon,
+    tilt: "rotate-[1.5deg]",
+  },
+  { to: "/sobre/introduction", match: "/sobre", label: "Sobre", icon: ScrollIcon, tilt: "-rotate-1" },
+];
+
+const useIsActive = () => {
   const { pathname } = useLocation();
-  const isActive = (src: string) =>
-    src === "/" ? pathname === "/" : pathname.startsWith(src.split("/").slice(0, 2).join("/"));
-  const tabs: Record<string, ITab> = {
-    home: { src: "/", name: "Mesa" },
-    create: { src: "/criar", name: "Criar ficha" },
-    about: { src: "/sobre/introduction", name: "Sobre" },
-  };
+  return (tab: ITab) =>
+    tab.match === "/" ? pathname === "/" : pathname.startsWith(tab.match);
+};
+
+const Brand = ({ className = "" }: { className?: string }) => (
+  <Link
+    to="/"
+    aria-label="HordaMaster — ir para a mesa de combate"
+    className={`shrink-0 rounded-lg transition-transform hover:-rotate-2 ${className}`}
+  >
+    <img
+      src={Logo}
+      alt="HordaMaster"
+      className="h-full w-auto [filter:brightness(1.3)_saturate(1.1)_drop-shadow(0_4px_0_rgb(0_0_0/0.45))]"
+    />
+  </Link>
+);
+
+// ---------------------------------------------------------------------------
+// Barra superior
+// Desktop: logo à esquerda + uma tábua com três etiquetas de papel pregadas.
+// Mobile: só a marca (a navegação fica nas abas de baixo).
+// ---------------------------------------------------------------------------
+
+export const TopBar = () => {
+  const isActive = useIsActive();
 
   return (
-    <>
-      <div className="flex-none group z-200 justify-end sm:justify-center flex">
-        <nav aria-label="Principal" className="hidden w-110 sm:flex z-45 relative p-1 rounded-xs mt-2 ">
-          <div className="absolute -left-5 -right-5 top-1/2 -translate-y-1/2 h-11">
-            <ImgDiv src={BigWood} className={"size-full p-2 px-6"} />
-          </div>
+    <header className="relative z-200 flex h-16 flex-none items-center justify-center bg-gradient-to-b from-brown-950/90 to-transparent px-4 sm:h-20 sm:justify-between sm:px-6">
+      <Brand className="h-12 sm:h-14" />
 
-          <ul className="flex flex-row gap-2 items-center justify-center">
-            <Link to="/" aria-label="HordaMaster — início" className="z-5 hidden sm:flex rounded transition-transform hover:-rotate-2">
-              <img src={Logo} alt="HordaMaster" className="h-12" />
-            </Link>
-            {Object.values(tabs).map((tab, index) => (
-              <ItemNav key={index} tab={tab} active={isActive(tab.src)} />
-            ))}
-          </ul>
-        </nav>
-
-        <nav aria-label="Principal" className="sm:hidden flex z-45 w-full justify-center rounded-t-lg relative -bottom-1 left-1/2 -translate-x-1/2 rounded-xs">
-          <div className="absolute z-0 -left-3 -right-3 -top-4 -bottom-4 h-25">
-            <ImgDiv src={BigWood} className={"size-full p-2 px-6"} />
-          </div>
-          <ul className="flex flex-row gap-2 items-center justify-center px-4">
-            <ItemNav tab={tabs["create"]} active={isActive(tabs["create"].src)} />
-            <Link
-              to={"/"}
-              aria-label="HordaMaster — mesa de combate"
-              className="z-5 transition-all duration-100 ease-in active:brightness-80 active:scale-95"
-            >
-              <ImgDiv src={Logo} className={"w-32 h-18"} />
-            </Link>
-            <ItemNav tab={tabs["about"]} active={isActive(tabs["about"].src)} />
-          </ul>
-        </nav>
-      </div>
-    </>
+      <nav aria-label="Principal" className="relative hidden px-4 sm:block">
+        {/* a tábua onde as etiquetas ficam pregadas */}
+        <img
+          src={BigWood}
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-10 w-full -translate-y-1/2 object-fill drop-shadow-[0_4px_4px_rgb(0_0_0/0.4)] select-none"
+        />
+        <ul className="relative flex items-center gap-2">
+          {TABS.map((tab) => {
+            const active = isActive(tab);
+            return (
+              <li key={tab.to}>
+                <Link
+                  to={tab.to}
+                  aria-current={active ? "page" : undefined}
+                  className={`group relative flex h-12 w-36 items-center justify-center pr-2 pl-9 font-title text-[15px] font-bold transition-transform duration-200 ${
+                    active
+                      ? "-translate-y-1 text-brown-900"
+                      : `${tab.tilt} translate-y-0.5 text-brown-800 hover:-translate-y-0.5 hover:rotate-0`
+                  }`}
+                >
+                  <img
+                    src={Paper}
+                    alt=""
+                    aria-hidden
+                    draggable={false}
+                    className={`pointer-events-none absolute inset-0 size-full object-fill transition-[filter] duration-200 select-none ${
+                      active
+                        ? "drop-shadow-[0_6px_4px_rgb(0_0_0/0.45)]"
+                        : "brightness-[0.78] saturate-[0.85] group-hover:brightness-95"
+                    }`}
+                  />
+                  <span className="relative pt-0.5">{tab.label}</span>
+                  {active && (
+                    <span
+                      aria-hidden
+                      className="absolute -bottom-1 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-gold-300 shadow-[0_0_8px_var(--color-gold-300)]"
+                    />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </header>
   );
 };
 
-interface IItemNav extends AnchorHTMLAttributes<HTMLAnchorElement> {
-  tab: ITab;
-  active?: boolean;
-}
+// ---------------------------------------------------------------------------
+// Barra de abas inferior (mobile): alcance do polegar, 3 abas iguais
+// ---------------------------------------------------------------------------
 
-const ItemNav = ({ tab, active = false, ...rest }: IItemNav) => {
+export const BottomNav = () => {
+  const isActive = useIsActive();
+
   return (
-    <li
-      className={`group/item transition-all duration-100 ease-in active:brightness-80  active:scale-95 z-20 sm:mb-0 cursor-pointer`}
+    <nav
+      aria-label="Principal"
+      className="relative z-200 flex-none pb-[env(safe-area-inset-bottom)] sm:hidden"
     >
-      <Link to={tab.src} aria-current={active ? "page" : undefined} className="block rounded" {...rest}>
-        <ImgDiv
-          src={Paper}
-          className={`transition-all  size-full p-2 px-6 group-hover/item:rotate-8 group-hover/item:translate-y-5 ${
-            active
-              ? " scale-95 -translate-y-2"
-              : "sm:-rotate-2 sm:translate-y-3"
-          }  `}
-        >
-          <p className="font-title sm:text-sm/4 p-1 pb-2 font-bold text-brown-900 whitespace-nowrap">
-            {tab.name}
-          </p>
-        </ImgDiv>
-      </Link>
-    </li>
+      <img
+        src={BigWood}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="pointer-events-none absolute -inset-x-2 -top-1 h-[calc(100%+4px)] w-[calc(100%+16px)] object-fill select-none"
+      />
+      <ul className="relative grid h-16 grid-cols-3">
+        {TABS.map((tab) => {
+          const active = isActive(tab);
+          const TabIcon = tab.icon;
+          return (
+            <li key={tab.to}>
+              <Link
+                to={tab.to}
+                aria-current={active ? "page" : undefined}
+                className="flex size-full flex-col items-center justify-center gap-1 active:scale-95"
+              >
+                <span className="relative flex h-8 w-[76px] items-center justify-center">
+                  {active && (
+                    <img
+                      src={Paper}
+                      alt=""
+                      aria-hidden
+                      className="absolute inset-0 size-full -rotate-2 object-fill drop-shadow-[0_2px_0_rgb(0_0_0/0.35)]"
+                    />
+                  )}
+                  <TabIcon
+                    size={20}
+                    weight={active ? "fill" : "bold"}
+                    className={`relative ${active ? "ml-5 text-brown-700" : "text-brown-200"}`}
+                  />
+                </span>
+                <span
+                  className={`font-title text-xs leading-none font-semibold ${
+                    active ? "text-brown-50" : "text-brown-200"
+                  }`}
+                >
+                  {tab.label}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 };
+
+const NavBar = TopBar;
 export default NavBar;

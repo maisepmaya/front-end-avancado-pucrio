@@ -10,10 +10,12 @@
     &nbsp;·&nbsp;
     <a href="#-identidade-visual">Identidade visual</a>
     &nbsp;·&nbsp;
+    <a href="#-grid-proporção-e-responsividade">Grid e responsividade</a>
+    &nbsp;·&nbsp;
     <a href="#-como-rodar">Como rodar</a>
   </p>
 
-  <img src="docs/combate.gif" alt="Aplicando dano em um goblin até ele ser derrotado e depois curando" width="800"/>
+  <img src="docs/combate.gif" alt="Aplicando dano em um goblin até ele ser derrotado e depois curando" width="900"/>
 </div>
 
 ---
@@ -26,7 +28,7 @@
 | **Meu papel**    | Projeto individual: product design, **todas as ilustrações da interface**, UI e desenvolvimento front-end. |
 | **Contexto**     | Pós-graduação em Desenvolvimento Full-Stack — PUC-Rio (2025). Redesenhado em 2026 para portfólio. |
 | **Ferramentas**  | Ilustração digital · React · TypeScript · Tailwind CSS                               |
-| **Destaques**    | Prévia ao vivo do cartão · feedback visual de dano/cura · estados vazios guiados · funciona no celular |
+| **Destaques**    | Pergaminho que se desenrola · prévia ao vivo do cartão · feedback visual de dano/cura · bestiário D&D com rolagem infinita · funciona do celular ao desktop |
 
 > Todas as artes da interface — madeira, pergaminhos, cartões, corações, escudo, estandarte, logo e o d20 — foram desenhadas por mim. Só os ícones das criaturas vêm do [Freepik](https://www.freepik.com).
 
@@ -53,7 +55,13 @@ Num RPG de mesa, o **mestre** narra a história e controla tudo que os jogadores
 
 Na primeira versão, o formulário de "Criar ficha" só aparecia quando o mouse passava por cima do pergaminho — bonito, mas a tarefa principal da tela ficava invisível e impossível de descobrir no celular.
 
-**Agora:** o formulário fica sempre aberto, o pergaminho virou o título da seção e entrou uma **prévia ao vivo** que mostra o cartão exatamente como ele vai aparecer na mesa de combate. Os números ganharam botões de − / + (mais fáceis de usar no toque) e o seletor de ícone virou uma **grade visual** no lugar de uma lista de texto.
+**Agora:** mantive a metáfora, mas resolvi o problema de descoberta. A tela abre com o pergaminho **enrolado e as instruções logo abaixo**, terminando num botão claro: **"Abrir pergaminho"** (clicar no próprio rolo também funciona). Ao abrir, o papel **se desenrola por cima das instruções**, com o rolo de baixo acompanhando a borda; ao fechar, ele se enrola de novo e as instruções reaparecem.
+
+<div align="center">
+  <img src="docs/pergaminho.gif" alt="O pergaminho se desenrolando por cima das instruções e depois enrolando de novo" width="560"/>
+</div>
+
+Do lado, uma **prévia ao vivo** mostra o cartão exatamente como ele vai aparecer na mesa. Os números ganharam botões de − / + (mais fáceis de usar no toque) e o seletor de ícone virou uma **grade visual** no lugar de uma lista de texto.
 
 <img src="docs/antes-depois-criar.png" alt="Antes e depois da tela Criar ficha"/>
 
@@ -87,9 +95,22 @@ Os alertas nativos do navegador quebravam a imersão. Agora há **avisos temáti
 - Foco visível em todos os controles, navegação por teclado e `Esc` para fechar diálogos.
 - Rótulos para leitores de tela em todos os botões de ícone; ilustrações decorativas marcadas como tal.
 - Respeito a `prefers-reduced-motion`.
-- No celular, a navegação vai para baixo (perto do polegar) e as fichas abrem numa gaveta lateral.
+- No celular, a navegação vai para a parte de baixo (zona do polegar) e as fichas abrem numa gaveta lateral.
 
 <img src="docs/mobile.png" alt="Telas no celular" width="520"/>
+
+### 7. A ilustração define o encaixe, não o contrário
+
+Como todas as artes são desenhadas à mão, o layout se adapta a elas — e não o contrário. Algumas decisões que saíram de **medir os próprios desenhos**:
+
+- **Pergaminho:** a base do rolo é um arco (mais alta no meio), então o título fica no "corpo" do rolo, depois da espiral, e o papel começa escondido sob ele. Como num pergaminho de verdade, os dois rolos têm **a mesma largura, mas ficam deslocados**: o de cima começa junto com o papel e passa um pouco à direita; o de baixo termina junto com o papel, passa à esquerda e fica **atrás** dele — e o canto do papel acompanha a curva da ponta do rolo. O desenho nunca é esticado: deformar a espiral denunciava a "trapaça" na hora.
+- **Estandarte das fichas:** as duas listras brancas do tecido ficam a 13% e 88% da largura do desenho. Busca, lista e detalhes ficam **entre as listras**, com divisórias finas em vez de caixas, e a barra de rolagem é fina e clara como elas.
+- **Navegação:** o logo fica sozinho à esquerda e as páginas viram **etiquetas de papel pregadas numa tábua**, todas do mesmo tamanho e alinhadas. A página ativa fica clara, levantada e com um marcador dourado; as outras, um pouco mais escuras e tortas, como papel pregado à mão.
+- **Lista de fichas legível:** ícone, nome e um resumo com ícones (nível, ♥ vida, 🛡 armadura). Os detalhes abrem por um botão — sem a lista "pular" no hover — com o texto completo e rolagem própria. As pinturas do bestiário D&D preenchem a moldura como um retrato e **ampliam ao passar o mouse**; a lista carrega sozinha conforme rola (**rolagem infinita**, sem botão de "carregar mais").
+
+<div align="center">
+  <img src="docs/bestiario.png" alt="Barra lateral do bestiário D&D com detalhes de um monstro abertos" width="280"/>
+</div>
 
 ---
 
@@ -112,6 +133,25 @@ O tom é de **mesa de taverna**: madeira, pergaminho e um estandarte de tecido, 
 
 ---
 
+## 📐 Grid, proporção e responsividade
+
+A interface segue um sistema de colunas por faixa de tela e o **grid de 8 pt** (Material Design): margens, alturas e espaçamentos são múltiplos de 8 e, no texto, de 4.
+
+| Faixa | Largura | Colunas | Margem | Gutter | Navegação |
+| --- | --- | :---: | :---: | :---: | --- |
+| Celular | < 640 px | 4 | 16 px | 24 px | Abas na parte de baixo + fichas em gaveta |
+| Tablet / notebook pequeno | 640–1279 px | 8 | 24 px | 24 px | Barra superior + fichas fixas na lateral |
+| Desktop | ≥ 1280 px | 12 | 24 px | 24 px | Barra superior; conteúdo numa **área segura de 1200 px** |
+
+- **Criar ficha** ocupa 8 das 12 colunas e a prévia, 4 (o pergaminho tem no máximo 760 px, para não dominar a tela). No tablet a prévia desce para baixo do formulário; no celular, tudo vira coluna única — e o título do pergaminho diminui junto com a tela para caber sempre numa linha só.
+- **Mesa de combate** é uma área de trabalho, então usa a largura toda: os cartões se reorganizam sozinhos (1 a 4 por linha). Abaixo de 390 px o cartão inteiro encolhe na mesma proporção, em vez de ser cortado.
+- **Alturas no grid de 8:** barras de 56/64 px, botões e campos de 48 px no toque e 40/32 px com mouse, barra lateral de 256 px.
+- **Áreas de toque:** no celular, todo controle tem pelo menos 44–48 px. Dentro dos cartões, onde a ilustração define o tamanho, os botões ganharam uma área de toque invisível maior que o desenho.
+- **"Onde estou? Para onde posso ir?"** (Krug): a página ativa tem o indicador de papel, cada tela tem seu título visível e o título da aba do navegador acompanha a página.
+- **Sem rolagem horizontal** de 320 a 1920 px — verificado com um teste automatizado que percorre seis larguras de tela e mede os alvos de toque.
+
+---
+
 ## 🖼️ Telas
 
 | Mesa de combate | Criar ficha |
@@ -125,7 +165,7 @@ O tom é de **mesa de taverna**: madeira, pergaminho e um estandarte de tecido, 
 ## ⚔️ Funcionalidades
 
 - Criar e apagar fichas de inimigos (nome, nível, vida, CA, ícone e anotações).
-- Buscar monstros prontos no bestiário oficial de D&D 5e ([5e SRD API](https://www.dnd5eapi.co/)).
+- Buscar monstros prontos no bestiário oficial de D&D 5e ([5e SRD API](https://www.dnd5eapi.co/)), com rolagem infinita e ampliação da imagem ao passar o mouse.
 - Invocar várias cópias numeradas automaticamente na mesa de combate.
 - Aplicar dano e cura, editar a vida direto no coração e recuperar a vida total.
 - Anotações por inimigo (condições, efeitos, lembretes).

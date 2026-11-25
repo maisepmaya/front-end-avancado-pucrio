@@ -50,7 +50,7 @@ const Toaster = () => {
               type="button"
               onClick={() => dismissToast(item.id)}
               aria-label="Fechar aviso"
-              className="rounded p-1 text-brown-500 hover:bg-brown-200"
+              className="flex size-8 items-center justify-center rounded text-brown-500 hover:bg-brown-200"
             >
               <XIcon size={14} weight="bold" />
             </button>

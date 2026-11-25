@@ -46,7 +46,7 @@ const Home = () => {
   }, [defeated, handleRemove]);
 
   return (
-    <main className="relative flex size-full flex-row">
+    <div className="relative flex size-full flex-row">
       {modal &&
         createPortal(
           modal === "reset" ? (
@@ -86,7 +86,7 @@ const Home = () => {
         />
         <Grid cards={cards} />
       </section>
-    </main>
+    </div>
   );
 };
 
@@ -232,7 +232,7 @@ const Grid = ({ cards }: { cards: CardType[] }) => {
   return (
     <div className="relative flex-1">
       <ul
-        className="absolute inset-0 grid grid-cols-[repeat(auto-fill,minmax(min(360px,100%),1fr))] content-start justify-items-center gap-x-4 gap-y-8 overflow-x-hidden overflow-y-auto px-1 pt-6 sm:px-4 pb-24 sm:pb-10"
+        className="absolute inset-0 grid grid-cols-[repeat(auto-fill,minmax(min(358px,100%),1fr))] content-start justify-items-center gap-x-4 gap-y-8 overflow-x-hidden overflow-y-auto px-4 pt-6 pb-10 sm:px-6"
         aria-label="Inimigos na mesa"
       >
         {cards.map((card, index) => (
@@ -382,12 +382,15 @@ const Card = ({ handleRemove, handleChange, item, index }: CardProps) => {
   const isDefeated = card.currLife <= 0;
 
   return (
+    // Em telas estreitas (< 390px) o cartão inteiro encolhe na mesma proporção,
+    // sem cortar a ilustração nem criar rolagem horizontal.
     <li
-      className="relative ml-7 animate-pop-in"
+      className="h-[calc(244px*var(--s))] w-[calc(358px*var(--s))] [--s:1] max-[389px]:[--s:0.86] max-[359px]:[--s:0.78]"
       aria-label={`${card.name}, nível ${card.level}, ${card.currLife} de ${card.life} pontos de vida${
         isDefeated ? ", derrotado" : ""
       }`}
     >
+     <div className="relative ml-7 w-[330px] origin-top-left scale-(--s) animate-pop-in">
       <div
         className={`transition-[filter,opacity] duration-300 ${
           isDefeated ? "opacity-70 grayscale" : ""
@@ -437,6 +440,7 @@ const Card = ({ handleRemove, handleChange, item, index }: CardProps) => {
                   btnType="plus"
                   title={`Curar ${lifeControl} PV`}
                   className="aspect-square h-[32%]"
+                  hitSlop="x"
                   onClick={() => handleChangeLife("plus")}
                   aria-label={`Curar ${lifeControl} pontos de vida de ${card.name}`}
                 />
@@ -460,6 +464,7 @@ const Card = ({ handleRemove, handleChange, item, index }: CardProps) => {
                 <SquareButton
                   btnType="minus"
                   className="aspect-square h-[32%]"
+                  hitSlop="x"
                   title={`Causar ${lifeControl} de dano`}
                   onClick={() => handleChangeLife("minus")}
                   aria-label={`Causar ${lifeControl} de dano em ${card.name}`}
@@ -507,7 +512,7 @@ const Card = ({ handleRemove, handleChange, item, index }: CardProps) => {
                 <button
                   type="button"
                   title="Recuperar toda a vida"
-                  className="absolute -top-2 -right-2 rounded-full bg-parchment p-0.5 transition-all hover:scale-110 active:scale-95"
+                  className="absolute -top-2 -right-2 rounded-full bg-parchment p-0.5 transition-all before:absolute before:-inset-2.5 before:content-[''] hover:scale-110 active:scale-95"
                   onClick={() => handleChangeLife("max")}
                   aria-label={`Recuperar toda a vida de ${card.name}`}
                 >
@@ -578,6 +583,7 @@ const Card = ({ handleRemove, handleChange, item, index }: CardProps) => {
           <span>{index + 1}</span>
         </ImgDiv>
       </div>
+     </div>
     </li>
   );
 };

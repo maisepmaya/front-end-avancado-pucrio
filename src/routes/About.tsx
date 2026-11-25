@@ -128,7 +128,7 @@ const About = () => {
   const current = sections.find((section) => section.id === id) ?? sections[0];
 
   return (
-    <main className="absolute inset-0 overflow-y-auto p-4 pb-28 sm:p-10">
+    <div className="absolute inset-0 overflow-y-auto px-4 py-6 sm:p-6 lg:p-10">
       <article
         className="mx-auto flex max-w-4xl flex-col gap-6 rounded-2xl bg-parchment p-5 text-left text-brown-700 shadow-[0_8px_0_var(--color-brown-800),0_20px_40px_rgb(0_0_0/0.45)] ring-4 ring-brown-300 animate-slide-up sm:p-10"
         aria-labelledby="about-title"
@@ -154,7 +154,7 @@ const About = () => {
                 key={section.id}
                 to={`/sobre/${section.id}`}
                 aria-current={active ? "page" : undefined}
-                className={`flex-1 rounded-lg px-2 py-2 text-center font-title text-sm font-semibold transition-all sm:text-base ${
+                className={`flex h-12 flex-1 items-center justify-center rounded-lg px-2 text-center font-title sm:h-10 text-sm font-semibold transition-all sm:text-base ${
                   active
                     ? "bg-brown-700 text-brown-100 shadow-[0_3px_0_var(--color-brown-900)]"
                     : "text-brown-600 hover:bg-brown-100"
@@ -185,13 +185,13 @@ const About = () => {
             href="https://www.dnd5eapi.co/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-lg bg-brown-700 px-3 py-2 font-bold text-brown-100 shadow-[0_3px_0_var(--color-brown-900)] hover:bg-brown-600"
+            className="inline-flex h-12 shrink-0 items-center gap-1.5 self-start rounded-lg bg-brown-700 px-4 font-bold sm:h-10 text-brown-100 shadow-[0_3px_0_var(--color-brown-900)] hover:bg-brown-600"
           >
             Conhecer a D&D 5e API <ArrowSquareOutIcon weight="bold" />
           </a>
         </footer>
       </article>
-    </main>
+    </div>
   );
 };
 

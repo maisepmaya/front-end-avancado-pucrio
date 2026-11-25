@@ -233,3 +233,34 @@ input[type="search"]::-webkit-search-cancel-button {
     transition-duration: 1ms !important;
   }
 }
+
+/* Rolagem da lista de fichas: fina e clara como as listras do estandarte.
+   (No Chrome, definir scrollbar-width desliga este estilo e volta a barra
+   cinza do sistema — por isso o padrão só vale onde ::-webkit-scrollbar
+   não existe, como no Firefox.) */
+.banner-scroll {
+  scrollbar-gutter: stable;
+}
+.banner-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.banner-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.banner-scroll::-webkit-scrollbar-thumb {
+  background: rgb(253 230 212 / 0.45);
+  border: 0;
+  border-radius: 999px;
+}
+.banner-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgb(253 230 212 / 0.7);
+}
+.banner-scroll::-webkit-scrollbar-button {
+  display: none;
+}
+@supports not selector(::-webkit-scrollbar) {
+  .banner-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(253 230 212 / 0.45) transparent;
+  }
+}

@@ -26,9 +26,11 @@ const variants: Record<ButtonVariant, string> = {
     "bg-transparent text-brown-200 ring-2 ring-inset ring-brown-500/70 hover:bg-brown-700/60 shadow-none",
 };
 
+// Alturas no grid de 8 px: 48 px no toque (mínimo recomendado pelo Material
+// Design / Apple), 40 px (md) e 32 px (sm) quando há mouse.
 const sizes = {
-  sm: "text-sm px-3 py-1.5 gap-1.5",
-  md: "text-base px-5 py-2 gap-2",
+  sm: "h-12 sm:h-8 text-sm px-3 gap-1.5",
+  md: "h-12 sm:h-10 text-base px-6 gap-2",
 };
 
 export const ButtonDefault: React.FC<IButtonDefault> = ({

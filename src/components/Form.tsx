@@ -48,9 +48,9 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             ref={ref}
             autoComplete="off"
             id={id}
-            className={`size-full px-3 ${
+            className={`h-12 w-full px-3 sm:h-10 ${
               icon ? "pl-8" : ""
-            } pt-2 pb-1 text-sm sm:text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-600 transition-colors ${
+            } text-base rounded focus:outline-none focus:ring-2 focus:ring-brown-600 transition-colors ${
               error ? "ring-2 ring-blood-500" : ""
             } ${className}`}
             aria-describedby={describedBy || undefined}

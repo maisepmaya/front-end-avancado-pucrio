@@ -10,6 +10,8 @@ import Exit from "./../assets/exit.png";
 
 interface ISquareButton extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
+  /** Amplia a área clicável sem mudar o desenho. "x" só nas laterais (botões empilhados). */
+  hitSlop?: "all" | "x";
   className?: string;
   btnType?: ISquareBtnType;
 }
@@ -18,6 +20,7 @@ const SquareButton = ({
   icon,
   btnType = "default",
   className,
+  hitSlop = "all",
   ...rest
 }: ISquareButton) => {
   const types: Record<ISquareBtnType, string> = {
@@ -30,7 +33,11 @@ const SquareButton = ({
   return (
     <button
       type="button"
-      className={`aspect-square cursor-pointer transition-transform hover:scale-110 active:scale-95 active:brightness-95 ${
+      className={`${
+        /\b(absolute|fixed)\b/.test(className ?? "") ? "" : "relative"
+      } aspect-square cursor-pointer before:absolute before:content-[''] ${
+        hitSlop === "all" ? "before:-inset-2" : "before:-inset-x-2 before:-inset-y-1"
+      } transition-transform hover:scale-110 active:scale-95 active:brightness-95 ${
         className ?? ""
       }`}
       {...rest}

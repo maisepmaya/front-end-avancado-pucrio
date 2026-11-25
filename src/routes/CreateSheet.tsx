@@ -1,15 +1,22 @@
-import { type ChangeEvent, type FormEvent, type ReactNode, useState } from "react";
+import {
+  type ChangeEvent,
+  type FormEvent,
+  type ReactNode,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import {
-  ArrowRightIcon,
   ShieldIcon,
   HeartIcon,
   StarIcon,
   MinusIcon,
   PlusIcon,
-  LightbulbIcon,
+  ScrollIcon,
   FloppyDiskIcon,
+  CaretDownIcon,
 } from "@phosphor-icons/react";
 
 import SheetBar from "../components/SheetBar";
@@ -105,6 +112,23 @@ const SheetForm = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
+  // O pergaminho começa enrolado, com as instruções à vista logo abaixo.
+  // Ao abrir, as instruções saem de cena e o formulário se desenrola.
+  const [open, setOpen] = useState(false);
+  // Altura real do formulário: o papel anima de 0 até ela, e o rolo de baixo
+  // fica preso à borda — os dois se movem como um bloco só.
+  const formRef = useRef<HTMLFormElement>(null);
+  const [paperHeight, setPaperHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = formRef.current;
+    if (!el) return;
+    const measure = () => setPaperHeight(el.offsetHeight);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const update = (patch: Partial<SheetCreation>) => {
     const next = { ...form, ...patch };
@@ -143,26 +167,99 @@ const SheetForm = () => {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="mx-auto grid max-w-5xl gap-6 px-4 pt-4 pb-28 sm:px-8 sm:pt-6 sm:pb-10 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-4 gap-6 px-4 pt-16 pb-10 sm:grid-cols-8 sm:px-6 sm:pt-8 xl:grid-cols-12">
         {/* Formulário */}
-        <section aria-labelledby="create-title" className="animate-slide-up">
-          <div className="relative z-10 -mb-24 hidden aspect-[853/167] sm:block">
-            <ImgDiv src={SheetFold} className="absolute inset-0">
-              <div className="flex size-full items-center pr-10 pb-2 pl-[15%] text-left">
-                <h1 id="create-title" className="pt-1 text-2xl font-bold text-brown-700">
-                  Nova ficha de inimigo
-                </h1>
-              </div>
-            </ImgDiv>
-          </div>
-          <h1 className="mb-3 pl-10 text-left text-2xl font-bold text-brown-100 sm:hidden">
-            Nova ficha de inimigo
-          </h1>
+        <section aria-labelledby="create-title" className="col-span-full mx-auto mb-8 w-full max-w-[760px] animate-slide-up xl:col-span-8">
+          {/* Rolo de cima: clicar enrola / desenrola o pergaminho */}
+          <button
+            type="button"
+            onClick={() => setOpen((prev) => !prev)}
+            aria-expanded={open}
+            aria-controls="sheet-paper"
+            title={open ? "Enrolar pergaminho" : "Abrir pergaminho"}
+            className="group relative z-30 ml-[6%] block aspect-[853/167] w-[94%] rounded-2xl transition-transform active:scale-[0.99]"
+          >
+            <img
+              src={SheetFold}
+              alt=""
+              aria-hidden
+              draggable={false}
+              className="pointer-events-none absolute inset-0 size-full object-fill drop-shadow-[0_8px_6px_rgb(0_0_0/0.35)] select-none"
+            />
+            {/* O texto fica no "corpo" do rolo (a base do desenho é um arco,
+                mais alta no meio), depois da espiral da esquerda. */}
+            <span className="absolute top-[42%] right-[7%] left-[14%] flex -translate-y-1/2 items-center justify-between gap-3 text-left">
+              <h1
+                id="create-title"
+                className="-rotate-[1.5deg] font-title text-[clamp(15px,4.6vw,30px)] leading-none font-bold whitespace-nowrap text-brown-800 [text-shadow:1px_1px_0_#fff8f2,-1px_-1px_0_#fff8f2,1px_-1px_0_#fff8f2,-1px_1px_0_#fff8f2,0_3px_0_rgb(130_88_63/0.35)]"
+              >
+                Nova ficha de inimigo
+              </h1>
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brown-700/10 sm:size-8 text-brown-600 transition-colors group-hover:bg-brown-700/20">
+                <CaretDownIcon
+                  weight="bold"
+                  className={`size-5 transition-transform duration-500 ${open ? "rotate-180" : ""}`}
+                />
+              </span>
+            </span>
+          </button>
 
+          {/* Palco: instruções (embaixo) e papel (em cima) ocupam o mesmo espaço.
+              Ao abrir, o papel se desenrola por cima das instruções. */}
+          {/* Encaixe de pergaminho de verdade: os dois rolos têm a mesma largura,
+              mas ficam deslocados. O de cima começa junto com o papel e passa um
+              pouco à direita; o de baixo termina junto com o papel, passa um pouco
+              à esquerda e fica atrás dele. */}
+          <div className="relative -mt-[7.1%] grid">
+            <div
+              inert={open}
+              aria-hidden={open}
+              className={`relative z-0 mx-auto max-w-2xl px-2 pt-[calc(6.5%+0.75rem)] pb-4 text-center transition-opacity [grid-area:1/1] sm:px-8 ${
+                open ? "opacity-0 delay-150 duration-500" : "opacity-100 delay-500 duration-500"
+              }`}
+            >
+              <p className="text-base text-brown-100 sm:text-lg">
+                Aqui você dá vida aos inimigos que vão testar a coragem dos seus jogadores.
+              </p>
+              <ul className="mx-auto mt-4 max-w-xl space-y-2 text-left text-sm text-brown-200 sm:text-base">
+                {[
+                  "Defina nome, nível, pontos de vida e classe de armadura — e anote habilidades para não esquecer nenhum detalhe.",
+                  "Escolha um ícone que combine com o terror que a criatura vai espalhar na mesa.",
+                  "Salve: a ficha vai para Minhas fichas, pronta para invocar quantas cópias você quiser.",
+                  "Criatura que não serve mais vai para o limbo pela lixeira, na barra lateral.",
+                ].map((tip) => (
+                  <li key={tip} className="flex gap-3">
+                    <span aria-hidden className="mt-2 size-2 shrink-0 rotate-45 bg-gold-500" />
+                    {tip}
+                  </li>
+                ))}
+              </ul>
+              <ButtonDefault
+                onClick={() => setOpen(true)}
+                icon={<ScrollIcon size={20} weight="fill" />}
+                text="Abrir pergaminho"
+                className="mt-6"
+              />
+              <p className="mt-4 text-sm text-brown-400">
+                ou{" "}
+                <Link to="/" className="font-semibold text-gold-300 underline-offset-4 hover:underline">
+                  volte para a mesa de combate
+                </Link>
+              </p>
+                        </div>
+
+            <div
+              id="sheet-paper"
+              className="relative z-10 ml-[7.2%] w-[86.8%] self-start transition-[height] duration-[900ms] ease-[cubic-bezier(0.33,1,0.68,1)] [grid-area:1/1]"
+              style={{ height: open ? paperHeight : 0 }}
+              inert={!open}
+            >
+              <div className="relative z-10 h-full overflow-hidden rounded-br-[20px]">
           <form
+            ref={formRef}
             noValidate
             onSubmit={handleSubmit}
-            className="mx-1 space-y-5 rounded-b-xl rounded-t-md bg-tag-bg p-5 text-left shadow-[0_6px_0_var(--color-brown-800),0_16px_32px_rgb(0_0_0/0.35)] sm:mx-5 sm:p-7 sm:pt-16"
+            className="space-y-5 bg-[#fbdbc2] px-5 pt-[calc(6.5%+0.5rem)] pb-10 text-left shadow-[inset_10px_0_14px_-10px_rgb(130_88_63/0.45),inset_-10px_0_14px_-10px_rgb(130_88_63/0.45)] sm:px-8"
           >
             {/* Nome */}
             <div>
@@ -187,7 +284,7 @@ const SheetForm = () => {
               <legend className="mb-2 text-sm font-bold text-brown-800">
                 Atributos
               </legend>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(144px,1fr))] gap-3">
                 <NumberField
                   id="sheet-level"
                   label="Nível"
@@ -232,7 +329,7 @@ const SheetForm = () => {
               <div
                 role="radiogroup"
                 aria-label="Ícone da criatura"
-                className="grid grid-cols-6 gap-2 sm:grid-cols-9"
+                className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-2 sm:grid-cols-[repeat(auto-fill,minmax(48px,1fr))]"
               >
                 {ICONS.map((icon) => {
                   const selected = form.icon === icon.src;
@@ -303,10 +400,23 @@ const SheetForm = () => {
               </div>
             </div>
           </form>
+              </div>
+
+              {/* Rolo de baixo (atrás do papel): termina junto com a borda direita do
+                  papel e passa um pouco à esquerda. Acompanha a borda enquanto desce.
+                  Fechado, some para não aparecer ao lado do rolo de cima. */}
+              <div
+                aria-hidden
+                className={`absolute right-0 -bottom-5 -left-[8.29%] z-0 h-10 rounded-full transition-opacity bg-gradient-to-b from-[#fde6d4] via-[#f1cdb0] to-[#d4a07c] shadow-[inset_0_2px_0_rgb(255_255_255/0.6),0_6px_8px_rgb(0_0_0/0.35)] before:absolute before:inset-y-1 before:left-1 before:w-3 before:rounded-full before:bg-[#c98f68]/70 after:absolute after:inset-y-1 after:right-1 after:w-2.5 after:rounded-full after:bg-[#c98f68]/70 ${
+                  open ? "opacity-100 duration-200" : "opacity-0 delay-700 duration-200"
+                }`}
+              />
+            </div>
+          </div>
         </section>
 
-        {/* Prévia + dicas */}
-        <aside className="flex flex-col gap-5 text-left xl:pt-10" aria-label="Prévia e dicas">
+        {/* Prévia */}
+        <aside className="col-span-full flex flex-col gap-6 text-left sm:col-span-8 xl:col-span-4 xl:pt-12" aria-label="Prévia do cartão">
           <div>
             <h2 className="mb-3 text-sm font-bold tracking-wider text-brown-300 uppercase">
               Prévia na mesa
@@ -314,22 +424,6 @@ const SheetForm = () => {
             <CardPreview form={form} />
           </div>
 
-          <div className="rounded-xl bg-brown-950/40 p-4 text-sm text-brown-200 ring-1 ring-brown-700">
-            <h2 className="mb-2 flex items-center gap-2 font-bold text-brown-100">
-              <LightbulbIcon weight="fill" className="fill-gold-300" /> Dicas do mestre
-            </h2>
-            <ul className="list-disc space-y-1.5 pl-5 marker:text-brown-500">
-              <li>Uma ficha vira quantas cópias você quiser — Goblin 1, Goblin 2, Goblin 3...</li>
-              <li>Use as anotações para habilidades que você sempre esquece no calor da batalha.</li>
-              <li>Fichas que não servem mais vão para o limbo pela lixeira, na barra lateral.</li>
-            </ul>
-            <Link
-              to="/"
-              className="mt-3 inline-flex items-center gap-1 rounded font-bold text-gold-300 hover:underline"
-            >
-              Ir para a mesa de combate <ArrowRightIcon weight="bold" />
-            </Link>
-          </div>
         </aside>
       </div>
     </div>
@@ -379,7 +473,7 @@ const NumberField = ({
         </span>
       </label>
       <div
-        className={`flex items-stretch overflow-hidden rounded-lg bg-brown-50 ring-1 focus-within:ring-2 ${
+        className={`flex h-12 items-stretch overflow-hidden rounded-lg bg-brown-50 ring-1 focus-within:ring-2 ${
           error ? "ring-2 ring-blood-500" : "ring-brown-300 focus-within:ring-brown-600"
         }`}
       >
@@ -387,7 +481,7 @@ const NumberField = ({
           type="button"
           onClick={() => step(-1)}
           aria-label={`Diminuir ${label}`}
-          className="px-2.5 text-brown-600 hover:bg-brown-200"
+          className="flex w-12 flex-none items-center justify-center text-brown-600 hover:bg-brown-200"
         >
           <MinusIcon weight="bold" />
         </button>
@@ -401,13 +495,13 @@ const NumberField = ({
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className="w-full min-w-0 bg-transparent py-2 text-center text-lg font-bold text-brown-900"
+          className="w-full min-w-0 bg-transparent text-center text-lg font-bold text-brown-900"
         />
         <button
           type="button"
           onClick={() => step(1)}
           aria-label={`Aumentar ${label}`}
-          className="px-2.5 text-brown-600 hover:bg-brown-200"
+          className="flex w-12 flex-none items-center justify-center text-brown-600 hover:bg-brown-200"
         >
           <PlusIcon weight="bold" />
         </button>
