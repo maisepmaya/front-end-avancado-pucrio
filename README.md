@@ -63,7 +63,7 @@ Na primeira versão, o formulário de "Criar ficha" só aparecia quando o mouse 
 
 Do lado, uma **prévia ao vivo** mostra o cartão exatamente como ele vai aparecer na mesa. Os números ganharam botões de − / + (mais fáceis de usar no toque) e o seletor de ícone virou uma **grade visual** no lugar de uma lista de texto.
 
-<img src="docs/antes-depois-criar.png" alt="Antes e depois da tela Criar ficha"/>
+<img src="docs/criar.png" alt="Tela Criar ficha com o pergaminho aberto e a prévia do cartão"/>
 
 ### 2. O estado do combate de relance
 
@@ -71,7 +71,7 @@ O grid de cartões mostrava cada inimigo, mas não o combate como um todo, e a �
 
 **Agora:** um cabeçalho resume **quantos estão na mesa, de pé e derrotados**, e uma barra de **vida da horda** mostra o quanto o combate já avançou. As ações em lote ganharam nomes que dizem o que fazem (**Tirar derrotados**, **Encerrar combate**) e pedem confirmação, com o foco começando em "Cancelar".
 
-<img src="docs/antes-depois-mesa.png" alt="Antes e depois da mesa de combate"/>
+<img src="docs/home.png" alt="Mesa de combate com o resumo da horda e os cartões"/>
 
 ### 3. Cada cartão responde ao que acontece com ele
 
